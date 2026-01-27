@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:gym_trainer/app/modules/home/views/home_view.dart';
+import 'package:gym_trainer/app/modules/home/bindings/home_binding.dart';
 import 'package:gym_trainer/presentation/statistic/statistic.screen.dart';
 import 'package:gym_trainer/presentation/wallet/wallet.screen.dart';
 import 'package:gym_trainer/presentation/profile/profile.screen.dart';
-import '../modules/home/controllers/home_controller.dart';
 
 part 'app_routes.dart';
 
@@ -14,9 +14,7 @@ class AppPages {
     GetPage(
       name: Routes.HOME,
       page: () => const HomeView(),
-      binding: BindingsBuilder(() {
-        Get.put(HomeController());
-      }),
+      binding: HomeBinding(),
     ),
     GetPage(
       name: Routes.STATISTIC,
