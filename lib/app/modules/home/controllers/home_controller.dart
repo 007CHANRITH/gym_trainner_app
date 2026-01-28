@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+
 class HomeController extends GetxController {
   // Bottom nav current index
   var currentIndex = 0.obs;
@@ -53,6 +54,8 @@ class HomeController extends GetxController {
   void updateSearchQuery(String query) {
     searchQuery.value = query;
   }
+
+
 
   void _loadFeaturedTrainers() {
     featuredTrainers.value = [
@@ -113,8 +116,8 @@ class HomeController extends GetxController {
   }
 
   void navigateToTrainerDetails(String trainerId) {
-    // TODO: Navigate to trainer details page
-    Get.toNamed('/trainer/$trainerId');
+    // Navigate to trainer details page
+    Get.toNamed('/trainer-details', arguments: {'id': trainerId});
   }
 
   void navigateToBookingDetails(String bookingId) {

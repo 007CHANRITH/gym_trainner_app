@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../config.dart';
-import '../../presentation/screens.dart';
-import 'bindings/controllers/controllers_bindings.dart';
+import 'package:gym_trainer/app/modules/favourite/views/favourite_view.dart';
+import 'package:gym_trainer/app/modules/favourite/bindings/favourite_binding.dart';
+// ...existing code...
 import 'routes.dart';
 
 class EnvironmentsBadge extends StatelessWidget {
@@ -27,9 +28,9 @@ class EnvironmentsBadge extends StatelessWidget {
 class Nav {
   static List<GetPage> routes = [
     GetPage(
-      name: Routes.STATISTIC,
-      page: () => const StatisticScreen(),
-      binding: StatisticControllerBinding(),
+      name: Routes.FAVOURITE,
+      page: () => const FavouriteView(),
+      binding: FavouriteBinding(), // Ensure FavouriteBinding is correctly imported and defined
     ),
     
   ];

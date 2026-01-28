@@ -1,9 +1,20 @@
 import 'package:get/get.dart';
-import 'package:gym_trainer/app/modules/home/views/home_view.dart';
-import 'package:gym_trainer/app/modules/home/bindings/home_binding.dart';
-import 'package:gym_trainer/presentation/favorite/favorite_screen.dart';
-import 'package:gym_trainer/presentation/wallet/wallet.screen.dart';
-import 'package:gym_trainer/presentation/profile/profile.screen.dart';
+
+import '../modules/favorite/views/favorite_view.dart';
+import '../modules/favourite/bindings/favourite_binding.dart';
+import '../modules/favourite/views/favourite_view.dart';
+import '../modules/home/bindings/home_binding.dart';
+import '../modules/home/views/home_view.dart';
+import '../modules/message_screen/bindings/message_screen_binding.dart';
+import '../modules/message_screen/views/message_screen_view.dart';
+import '../modules/profile/bindings/profile_binding.dart';
+import '../modules/profile/views/profile_screen.dart';
+import '../modules/wallet/views/wallet_screen.dart';
+import '../modules/trainer/views/trainer_details_view.dart';
+import '../modules/trainer/bindings/trainer_details_binding.dart';
+
+// import '../modules/trainer/views/trainer_details_view.dart';
+// TrainerDetails route temporarily removed for error fix
 
 part 'app_routes.dart';
 
@@ -18,7 +29,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.FAVORITE,
-      page: () => const FavoriteScreen(),
+      page: () => const FavoriteView(),
     ),
     GetPage(
       name: Routes.WALLET,
@@ -27,6 +38,22 @@ class AppPages {
     GetPage(
       name: Routes.PROFILE,
       page: () => ProfileScreen(),
+      binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.FAVOURITE,
+      page: () => const FavouriteView(),
+      binding: FavouriteBinding(),
+    ),
+    GetPage(
+      name: _Paths.MESSAGE_SCREEN,
+      page: () => const MessageScreenView(),
+      binding: MessageScreenBinding(),
+    ),
+    GetPage(
+      name: _Paths.TRAINER_DETAILS,
+      page: () => TrainerDetailsView(),
+      binding: TrainerDetailsBinding(),
     ),
   ];
 }
