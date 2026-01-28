@@ -189,7 +189,7 @@ class SignUpView extends GetView<SignUpController> {
                       shadowColor: const Color(0xFF896CFE).withOpacity(0.3),
                     ),
                     onPressed: () {
-                      Get.offNamed(Routes.HOME);
+                      Get.offNamed(Routes.WELCOME);
                     },
                     child: const Text(
                       'Create Account',

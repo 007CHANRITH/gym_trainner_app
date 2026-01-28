@@ -1,0 +1,23 @@
+import 'package:get/get.dart';
+
+class WelcomeController extends GetxController {
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
+  void goToGetStarted() {
+    // Navigate to Get Started screen
+    Get.toNamed('/get-started');
+  }
+}

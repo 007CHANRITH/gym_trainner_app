@@ -16,6 +16,28 @@ import '../modules/sign_up/views/sign_up_view.dart';
 import '../modules/trainer/bindings/trainer_details_binding.dart';
 import '../modules/trainer/views/trainer_details_view.dart';
 import '../modules/wallet/views/wallet_screen.dart';
+import '../modules/welcome/bindings/welcome_binding.dart';
+import '../modules/welcome/views/welcome_view.dart';
+import '../modules/get_started/bindings/get_started_binding.dart';
+import '../modules/get_started/views/get_started_view.dart';
+import '../modules/gender_selection/bindings/gender_selection_binding.dart';
+import '../modules/gender_selection/views/gender_selection_view.dart';
+import '../modules/age_input/bindings/age_input_binding.dart';
+import '../modules/age_input/views/age_input_view.dart';
+import '../modules/weight_input/bindings/weight_input_binding.dart';
+import '../modules/weight_input/views/weight_input_view.dart';
+import '../modules/height_input/bindings/height_input_binding.dart';
+import '../modules/height_input/views/height_input_view.dart';
+import '../modules/fitness_goal/bindings/fitness_goal_binding.dart';
+import '../modules/fitness_goal/views/fitness_goal_view.dart';
+import '../modules/activity_level/bindings/activity_level_binding.dart';
+import '../modules/activity_level/views/activity_level_view.dart';
+import '../modules/fitness_level/bindings/fitness_level_binding.dart';
+import '../modules/fitness_level/views/fitness_level_view.dart';
+import '../modules/notification_permission/bindings/notification_permission_binding.dart';
+import '../modules/notification_permission/views/notification_permission_view.dart';
+import '../modules/profile_summary/bindings/profile_summary_binding.dart';
+import '../modules/profile_summary/views/profile_summary_view.dart';
 
 // import '../modules/trainer/views/trainer_details_view.dart';
 // TrainerDetails route temporarily removed for error fix
@@ -68,6 +90,61 @@ class AppPages {
       name: _Paths.SIGN_UP,
       page: () => const SignUpView(),
       binding: SignUpBinding(),
+    ),
+    GetPage(
+      name: _Paths.WELCOME,
+      page: () => const WelcomeView(),
+      binding: WelcomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.GET_STARTED,
+      page: () => const GetStartedView(),
+      binding: GetStartedBinding(),
+    ),
+    GetPage(
+      name: _Paths.GENDER_SELECTION,
+      page: () => const GenderSelectionView(),
+      binding: GenderSelectionBinding(),
+    ),
+    GetPage(
+      name: _Paths.AGE_INPUT,
+      page: () => const AgeInputView(),
+      binding: AgeInputBinding(),
+    ),
+    GetPage(
+      name: _Paths.WEIGHT_INPUT,
+      page: () => const WeightInputView(),
+      binding: WeightInputBinding(),
+    ),
+    GetPage(
+      name: _Paths.HEIGHT_INPUT,
+      page: () => const HeightInputView(),
+      binding: HeightInputBinding(),
+    ),
+    GetPage(
+      name: _Paths.FITNESS_GOAL,
+      page: () => const FitnessGoalView(),
+      binding: FitnessGoalBinding(),
+    ),
+    GetPage(
+      name: _Paths.ACTIVITY_LEVEL,
+      page: () => const ActivityLevelView(),
+      binding: ActivityLevelBinding(),
+    ),
+    GetPage(
+      name: _Paths.FITNESS_LEVEL,
+      page: () => const FitnessLevelView(),
+      binding: FitnessLevelBinding(),
+    ),
+    GetPage(
+      name: _Paths.NOTIFICATION_PERMISSION,
+      page: () => const NotificationPermissionView(),
+      binding: NotificationPermissionBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFILE_SUMMARY,
+      page: () => const ProfileSummaryView(),
+      binding: ProfileSummaryBinding(),
     ),
   ];
 }
