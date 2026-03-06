@@ -1,167 +1,392 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../controllers/profile_controller.dart';
+import 'package:flutter/cupertino.dart';
 
-class ProfileScreen extends GetView<ProfileController> {
+const Color ink = Color(0xFF0A0A0F);
+const Color surface = Color(0xFF111118);
+const Color card = Color(0xFF17171F);
+const Color raised = Color(0xFF1E1E28);
+const Color stroke = Color(0xFF2A2A36);
+const Color neon = Color(0xFFCBFF47);
+const Color coral = Color(0xFFFF5C5C);
+const Color sky = Color(0xFF5CE8FF);
+const Color lilac = Color(0xFFA78BFA);
+const Color muted = Color(0xFF6B6B7E);
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121217),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF19141E),
-        elevation: 0,
-        title: const Text('My Profile', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
-        centerTitle: true,
+      backgroundColor: ink,
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 24),
+            _buildProfileCard(),
+            const SizedBox(height: 24),
+            _buildQuickStats(),
+            const SizedBox(height: 24),
+            _buildGoalsSection(),
+            const SizedBox(height: 24),
+            _buildMenuSection(),
+          ],
+        ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+      child: Row(
         children: [
-          Center(
+          Container(
+            width: 48, height: 48,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [lilac.withOpacity(0.2), lilac.withOpacity(0.05)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: lilac.withOpacity(0.3)),
+            ),
+            child: const Icon(CupertinoIcons.person_fill, color: lilac, size: 22),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 160,
-                  height: 160,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4),
-                  ),
-                  child: ClipOval(
-                    child: Image.network(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqiGDWxu58BS_M9_hloRMYzZ_f7LMEs8a6qA&s',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Sophia Carter',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontFamily: 'Lexend',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'sophia.carter@example.com',
-                  style: TextStyle(
-                    color: Color(0xFFAA9EBC),
-                    fontSize: 18,
-                    fontFamily: 'Lexend',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Birthday: 01/01/1990',
-                  style: TextStyle(
-                    color: Color(0xFFAA9EBC),
-                    fontSize: 16,
-                    fontFamily: 'Lexend',
-                  ),
-                ),
+                Text('My Profile', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+                SizedBox(height: 2),
+                Text('Manage your account', style: TextStyle(color: muted, fontSize: 13)),
               ],
             ),
           ),
-          const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          _iconButton(CupertinoIcons.settings, () {}),
+        ],
+      ),
+    );
+  }
+
+  Widget _iconButton(IconData icon, VoidCallback onTap) {
+    return Material(
+      color: card,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Container(
+          width: 44, height: 44,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: stroke)),
+          child: Icon(icon, color: Colors.white70, size: 20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [neon.withOpacity(0.08), Colors.transparent],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: neon.withOpacity(0.2)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                // Avatar
+                Stack(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [neon, neon.withOpacity(0.5)]),
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(19),
+                        child: SizedBox(
+                          width: 72, height: 72,
+                          child: Image.network(
+                            'https://randomuser.me/api/portraits/women/44.jpg',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(color: raised, child: const Icon(CupertinoIcons.person_fill, color: muted, size: 32)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(bottom: 0, right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(color: card, shape: BoxShape.circle),
+                        child: Container(
+                          width: 18, height: 18,
+                          decoration: BoxDecoration(color: neon, shape: BoxShape.circle),
+                          child: const Icon(CupertinoIcons.checkmark_alt, color: ink, size: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 16),
+                // Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Sophia Carter', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 4),
+                      Text('sophia.carter@example.com', style: TextStyle(color: muted, fontSize: 12)),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [neon.withOpacity(0.15), neon.withOpacity(0.05)]),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: neon.withOpacity(0.3)),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(CupertinoIcons.rosette, color: neon, size: 14),
+                            SizedBox(width: 5),
+                            Text('Premium', style: TextStyle(color: neon, fontSize: 11, fontWeight: FontWeight.w700)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                            Icon(CupertinoIcons.pencil, color: muted, size: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickStats() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          _statBox('12', 'Sessions', CupertinoIcons.sportscourt, neon),
+          const SizedBox(width: 12),
+          _statBox('3', 'Trainers', CupertinoIcons.person_2, sky),
+          const SizedBox(width: 12),
+          _statBox('24h', 'Workout', CupertinoIcons.timer, lilac),
+        ],
+      ),
+    );
+  }
+
+  Widget _statBox(String value, String label, IconData icon, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: card,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: stroke),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [color.withOpacity(0.15), color.withOpacity(0.05)]),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(height: 12),
+            Text(value, style: TextStyle(color: color, fontSize: 20, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 2),
+            Text(label, style: TextStyle(color: muted, fontSize: 11)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoalsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _ProfileStatCard(label: 'Weight', value: '120 lbs'),
-              _ProfileStatCard(label: 'Age', value: '34'),
-              _ProfileStatCard(label: 'Height', value: "5'6''"),
+              const Text('My Goals', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(color: neon.withOpacity(0.12), borderRadius: BorderRadius.circular(8)),
+                child: const Text('View All', style: TextStyle(color: neon, fontSize: 11, fontWeight: FontWeight.w700)),
+              ),
             ],
           ),
-          const SizedBox(height: 32),
-          _ProfileMenu(),
-        ],
-      ),
+        ),
+        const SizedBox(height: 14),
+        SizedBox(
+          height: 100,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: [
+              _goalCard('Lose Weight', '5 lbs to go', 0.7, coral, CupertinoIcons.gauge),
+              _goalCard('Build Muscle', '3/5 weeks', 0.6, neon, CupertinoIcons.sportscourt),
+              _goalCard('Flexibility', '80% done', 0.8, sky, CupertinoIcons.person),
+              _goalCard('Endurance', '50% done', 0.5, lilac, CupertinoIcons.bolt),
+            ],
+          ),
+        ),
+      ],
     );
   }
-}
 
-class _ProfileStatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  const _ProfileStatCard({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _goalCard(String title, String subtitle, double progress, Color color, IconData icon) {
     return Container(
-      width: 110,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+      width: 150,
+      margin: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF352B3F),
-        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(colors: [color.withOpacity(0.1), color.withOpacity(0.02)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withOpacity(0.25)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontFamily: 'Lexend',
-              fontWeight: FontWeight.w500,
-            ),
+          Row(
+            children: [
+              Icon(icon, color: color, size: 16),
+              const SizedBox(width: 6),
+              Expanded(child: Text(title, style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis)),
+            ],
           ),
           const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontFamily: 'Lexend',
-              fontWeight: FontWeight.w700,
+          Text(subtitle, style: TextStyle(color: muted, fontSize: 11)),
+          const Spacer(),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: color.withOpacity(0.2),
+              valueColor: AlwaysStoppedAnimation(color),
+              minHeight: 6,
             ),
           ),
         ],
       ),
     );
   }
-}
 
-class _ProfileMenu extends StatelessWidget {
-  final List<_MenuItem> items = const [
-    _MenuItem(icon: Icons.person, label: 'Profile'),
-    _MenuItem(icon: Icons.favorite, label: 'Favorite'),
-    _MenuItem(icon: Icons.privacy_tip, label: 'Privacy Policy'),
-    _MenuItem(icon: Icons.settings, label: 'Settings'),
-    _MenuItem(icon: Icons.help_outline, label: 'Help'),
-    _MenuItem(icon: Icons.logout, label: 'Logout'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: items
-          .map((item) => Card(
-                color: const Color(0xFF19141E),
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  leading: Icon(item.icon, color: Colors.white),
-                  title: Text(
-                    item.label,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontFamily: 'Lexend',
-                    ),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
-                  onTap: () {},
-                ),
-              ))
-          .toList(),
+  Widget _buildMenuSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 14),
+            child: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
+          ),
+          ..._menuItems().asMap().entries.map((e) => _menuTile(e.value, e.key)),
+        ],
+      ),
     );
   }
-}
 
-class _MenuItem {
-  final IconData icon;
-  final String label;
-  const _MenuItem({required this.icon, required this.label});
+  Widget _menuTile(Map<String, dynamic> item, int index) {
+    final bool isDanger = item['danger'] == true;
+    final Color color = item['color'] as Color;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 300 + (index * 60)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 15 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: isDanger ? coral.withOpacity(0.08) : card,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isDanger ? coral.withOpacity(0.3) : stroke),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42, height: 42,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [color.withOpacity(0.15), color.withOpacity(0.05)]),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(item['icon'] as IconData, color: color, size: 18),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item['label'] as String, style: TextStyle(color: isDanger ? coral : Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                        if (item['subtitle'] != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Text(item['subtitle'] as String, style: TextStyle(color: muted, fontSize: 11)),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Icon(CupertinoIcons.chevron_right, color: isDanger ? coral.withOpacity(0.5) : muted, size: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Map<String, dynamic>> _menuItems() => [
+    {'icon': CupertinoIcons.person, 'label': 'Edit Profile', 'subtitle': 'Update your information', 'color': neon, 'danger': false},
+    {'icon': CupertinoIcons.creditcard, 'label': 'Subscription', 'subtitle': 'Premium - Renews Mar 15', 'color': sky, 'danger': false},
+    {'icon': CupertinoIcons.bell, 'label': 'Notifications', 'subtitle': 'Manage alerts', 'color': lilac, 'danger': false},
+    {'icon': CupertinoIcons.shield, 'label': 'Privacy & Security', 'subtitle': null, 'color': Colors.white54, 'danger': false},
+    {'icon': CupertinoIcons.question_circle, 'label': 'Help & Support', 'subtitle': null, 'color': Colors.white54, 'danger': false},
+    {'icon': CupertinoIcons.square_arrow_right, 'label': 'Log Out', 'subtitle': null, 'color': coral, 'danger': true},
+  ];
 }

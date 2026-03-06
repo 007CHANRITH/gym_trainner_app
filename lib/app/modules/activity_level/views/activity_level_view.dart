@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import '../controllers/activity_level_controller.dart';
+
+// ─── Design Tokens (matching home_view) ────────────────────────────────────
+const Color ink = Color(0xFF0A0A0F);
+const Color surface = Color(0xFF111118);
+const Color card = Color(0xFF17171F);
+const Color raised = Color(0xFF1E1E28);
+const Color stroke = Color(0xFF2A2A36);
+const Color neon = Color(0xFFCBFF47);
+const Color coral = Color(0xFFFF5C5C);
+const Color sky = Color(0xFF5CE8FF);
+const Color lilac = Color(0xFFA78BFA);
+const Color muted = Color(0xFF6B6B7E);
 
 class ActivityLevelView extends GetView<ActivityLevelController> {
   const ActivityLevelView({Key? key}) : super(key: key);
@@ -8,128 +21,84 @@ class ActivityLevelView extends GetView<ActivityLevelController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ink,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(CupertinoIcons.back, color: Colors.white),
           onPressed: () => controller.goBack(),
         ),
         centerTitle: true,
-        title: const Text(
-          'Activity Level',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-        ),
+        title: const Text('Activity Level', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'What is your activity level?',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+            const Text('What is your activity level?', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
             const SizedBox(height: 10),
-            Text(
-              'This helps us understand your lifestyle',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
+            Text('This helps us understand your lifestyle', style: TextStyle(fontSize: 14, color: muted)),
             const SizedBox(height: 30),
             Expanded(
               child: ListView.builder(
                 itemCount: controller.levels.length,
                 itemBuilder: (context, index) {
                   final level = controller.levels[index];
-                  return Obx(
-                    () => GestureDetector(
-                      onTap: () =>
-                          controller.selectLevel(level['id'] as String),
+                  return Obx(() {
+                    final isSelected = controller.selectedLevel.value == level['id'];
+                    return GestureDetector(
+                      onTap: () => controller.selectLevel(level['id'] as String),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 16,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: controller.selectedLevel.value ==
-                                level['id']
-                                ? Colors.indigo
-                                : Colors.grey[300]!,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          color: controller.selectedLevel.value ==
-                              level['id']
-                              ? Colors.indigo.withOpacity(0.1)
-                              : Colors.white,
+                          border: Border.all(color: isSelected ? neon : stroke, width: 2),
+                          borderRadius: BorderRadius.circular(14),
+                          color: isSelected ? neon.withOpacity(0.1) : card,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    level['label'] as String,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: controller.selectedLevel.value ==
-                                          level['id']
-                                          ? Colors.indigo
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                Radio<String>(
-                                  value: level['id'] as String,
-                                  groupValue: controller.selectedLevel.value,
-                                  onChanged: (String? newValue) {
-                                    if (newValue != null) {
-                                      controller.selectLevel(newValue);
-                                    }
-                                  },
-                                  activeColor: Colors.indigo,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              level['description'] as String,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(level['label'] as String,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isSelected ? neon : Colors.white)),
+                                  const SizedBox(height: 4),
+                                  Text(level['description'] as String, style: TextStyle(fontSize: 12, color: muted)),
+                                ],
                               ),
+                            ),
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: isSelected ? neon : stroke, width: 2),
+                                color: isSelected ? neon : Colors.transparent,
+                              ),
+                              child: isSelected ? const Icon(CupertinoIcons.checkmark, color: ink, size: 16) : null,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  });
                 },
               ),
             ),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 54,
               child: ElevatedButton(
                 onPressed: () => controller.nextStep(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  backgroundColor: neon,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text(
-                  'Next',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                child: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: ink)),
               ),
             ),
             const SizedBox(height: 20),

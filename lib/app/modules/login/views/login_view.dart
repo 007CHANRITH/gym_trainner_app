@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../controllers/login_controller.dart';
 import '../../../routes/app_pages.dart';
+
+// ─── Design Tokens (matching home_view) ────────────────────────────────────────
+const Color ink = Color(0xFF0A0A0F);
+const Color surface = Color(0xFF111118);
+const Color card = Color(0xFF17171F);
+const Color raised = Color(0xFF1E1E28);
+const Color stroke = Color(0xFF2A2A36);
+const Color neon = Color(0xFFCBFF47);
+const Color coral = Color(0xFFFF5C5C);
+const Color sky = Color(0xFF5CE8FF);
+const Color lilac = Color(0xFFA78BFA);
+const Color muted = Color(0xFF6B6B7E);
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
@@ -12,7 +25,7 @@ class LoginView extends GetView<LoginController> {
     final passwordController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F12),
+      backgroundColor: ink,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -26,55 +39,23 @@ class LoginView extends GetView<LoginController> {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF896CFE), Color(0xFF6B4FAA)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: neon.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF896CFE).withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      border: Border.all(color: neon, width: 2),
                     ),
-                    child: const Icon(Icons.fitness_center, color: Colors.white, size: 32),
+                    child: const Icon(CupertinoIcons.sportscourt, color: neon, size: 32),
                   ),
                 ),
                 const SizedBox(height: 48),
 
                 // Title
-                const Text(
-                  'Welcome Back',
-                  style: TextStyle(
-                    color: Color(0xFF896CFE),
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                  ),
-                ),
+                const Text('Welcome Back', style: TextStyle(color: neon, fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
                 const SizedBox(height: 8),
-                Text(
-                  'Sign in to your account',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
+                Text('Sign in to your account', style: TextStyle(color: muted, fontSize: 14, fontWeight: FontWeight.w400)),
                 const SizedBox(height: 40),
 
                 // Email Field
-                Text(
-                  'Email Address',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text('Email Address', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 TextField(
                   controller: emailController,
@@ -82,36 +63,20 @@ class LoginView extends GetView<LoginController> {
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                   decoration: InputDecoration(
                     hintText: 'Enter your email',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
-                    prefixIcon: Icon(Icons.email_outlined, color: Colors.white.withOpacity(0.5)),
+                    hintStyle: TextStyle(color: muted),
+                    prefixIcon: Icon(CupertinoIcons.mail, color: muted),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1F),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFF896CFE), width: 2),
-                    ),
+                    fillColor: card,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: stroke)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: stroke)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: neon, width: 2)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 // Password Field
-                Text(
-                  'Password',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text('Password', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 TextField(
                   controller: passwordController,
@@ -119,22 +84,13 @@ class LoginView extends GetView<LoginController> {
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                   decoration: InputDecoration(
                     hintText: 'Enter your password',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
-                    prefixIcon: Icon(Icons.lock_outline, color: Colors.white.withOpacity(0.5)),
+                    hintStyle: TextStyle(color: muted),
+                    prefixIcon: Icon(CupertinoIcons.lock, color: muted),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1F),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFF896CFE), width: 2),
-                    ),
+                    fillColor: card,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: stroke)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: stroke)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: neon, width: 2)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),
@@ -146,14 +102,7 @@ class LoginView extends GetView<LoginController> {
                   child: TextButton(
                     onPressed: () {},
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    child: Text(
-                      'Forgot password?',
-                      style: TextStyle(
-                        color: const Color(0xFF896CFE).withOpacity(0.8),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    child: Text('Forgot password?', style: TextStyle(color: neon.withOpacity(0.8), fontSize: 13, fontWeight: FontWeight.w500)),
                   ),
                 ),
 
@@ -162,26 +111,15 @@ class LoginView extends GetView<LoginController> {
                 // Sign In Button
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 54,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF896CFE),
+                      backgroundColor: neon,
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      shadowColor: const Color(0xFF896CFE).withOpacity(0.3),
                     ),
-                    onPressed: () {
-                      Get.offNamed(Routes.HOME);
-                    },
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
+                    onPressed: () => Get.offNamed(Routes.HOME),
+                    child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: ink, letterSpacing: 0.5)),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -191,23 +129,10 @@ class LoginView extends GetView<LoginController> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Don\'t have an account? ',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
-                          fontSize: 14,
-                        ),
-                      ),
+                      Text("Don't have an account? ", style: TextStyle(color: muted, fontSize: 14)),
                       GestureDetector(
                         onTap: () => Get.toNamed(Routes.SIGN_UP),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: Color(0xFF896CFE),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: const Text('Sign Up', style: TextStyle(color: neon, fontSize: 14, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),

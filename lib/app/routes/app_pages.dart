@@ -1,8 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/favorite/bindings/favorite_binding.dart';
 import '../modules/favorite/views/favorite_view.dart';
-import '../modules/favourite/bindings/favourite_binding.dart';
-import '../modules/favourite/views/favourite_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -55,7 +54,8 @@ class AppPages {
     ),
     GetPage(
       name: Routes.FAVORITE,
-      page: () => const FavoriteView(),
+      page: () => const FavouriteView(),
+      binding: FavoriteBinding(),
     ),
     GetPage(
       name: Routes.WALLET,
@@ -69,11 +69,11 @@ class AppPages {
     GetPage(
       name: _Paths.FAVOURITE,
       page: () => const FavouriteView(),
-      binding: FavouriteBinding(),
+      binding: FavoriteBinding(),
     ),
     GetPage(
       name: _Paths.MESSAGE_SCREEN,
-      page: () => const MessageScreenView(),
+      page: () => const MessagingScreen(),
       binding: MessageScreenBinding(),
     ),
     GetPage(

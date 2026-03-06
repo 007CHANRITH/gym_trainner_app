@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import '../controllers/profile_summary_controller.dart';
+
+// ─── Design Tokens (matching home_view) ────────────────────────────────────────
+const Color ink = Color(0xFF0A0A0F);
+const Color surface = Color(0xFF111118);
+const Color card = Color(0xFF17171F);
+const Color raised = Color(0xFF1E1E28);
+const Color stroke = Color(0xFF2A2A36);
+const Color neon = Color(0xFFCBFF47);
+const Color coral = Color(0xFFFF5C5C);
+const Color sky = Color(0xFF5CE8FF);
+const Color lilac = Color(0xFFA78BFA);
+const Color muted = Color(0xFF6B6B7E);
 
 class ProfileSummaryView extends GetView<ProfileSummaryController> {
   const ProfileSummaryView({Key? key}) : super(key: key);
@@ -8,99 +21,56 @@ class ProfileSummaryView extends GetView<ProfileSummaryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ink,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: surface,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'Profile Summary',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-        ),
+        title: const Text('Profile Summary', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Your Profile',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+            const Text('Your Profile', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
             const SizedBox(height: 10),
-            Text(
-              'Review your information before continuing',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 30),
+            Text('Review your information before continuing', style: TextStyle(fontSize: 14, color: muted)),
+            const SizedBox(height: 20),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildSummaryCard(
-                      icon: Icons.person,
-                      title: 'Gender',
-                      value: 'Male',
-                    ),
+                    _buildSummaryCard(icon: CupertinoIcons.person_fill, title: 'Gender', value: 'Male', color: neon),
                     const SizedBox(height: 12),
-                    _buildSummaryCard(
-                      icon: Icons.cake,
-                      title: 'Age',
-                      value: '25 years',
-                    ),
+                    _buildSummaryCard(icon: CupertinoIcons.gift, title: 'Age', value: '25 years', color: coral),
                     const SizedBox(height: 12),
-                    _buildSummaryCard(
-                      icon: Icons.monitor_weight,
-                      title: 'Weight',
-                      value: '70 kg',
-                    ),
+                    _buildSummaryCard(icon: CupertinoIcons.gauge, title: 'Weight', value: '70 kg', color: sky),
                     const SizedBox(height: 12),
-                    _buildSummaryCard(
-                      icon: Icons.height,
-                      title: 'Height',
-                      value: '170 cm',
-                    ),
+                    _buildSummaryCard(icon: CupertinoIcons.resize_v, title: 'Height', value: '170 cm', color: lilac),
                     const SizedBox(height: 12),
-                    _buildSummaryCard(
-                      icon: Icons.sports_gymnastics,
-                      title: 'Fitness Goal',
-                      value: 'Muscle Gain',
-                    ),
+                    _buildSummaryCard(icon: CupertinoIcons.sportscourt, title: 'Fitness Goal', value: 'Muscle Gain', color: neon),
                     const SizedBox(height: 12),
-                    _buildSummaryCard(
-                      icon: Icons.directions_run,
-                      title: 'Activity Level',
-                      value: 'Moderately Active',
-                    ),
+                    _buildSummaryCard(icon: CupertinoIcons.bolt, title: 'Activity Level', value: 'Moderately Active', color: coral),
                     const SizedBox(height: 12),
-                    _buildSummaryCard(
-                      icon: Icons.fitness_center,
-                      title: 'Fitness Level',
-                      value: 'Intermediate',
-                    ),
+                    _buildSummaryCard(icon: CupertinoIcons.sportscourt, title: 'Fitness Level', value: 'Intermediate', color: sky),
                   ],
                 ),
               ),
+               
             ),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => controller.goBack(),
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      side:
-                          const BorderSide(color: Colors.indigo, width: 2),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      side: const BorderSide(color: neon, width: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text(
-                      'Edit',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.indigo,
-                      ),
-                    ),
+                    child: const Text('Edit', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: neon)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -108,19 +78,11 @@ class ProfileSummaryView extends GetView<ProfileSummaryController> {
                   child: ElevatedButton(
                     onPressed: () => controller.completeProfile(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      backgroundColor: neon,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: ink)),
                   ),
                 ),
               ],
@@ -132,51 +94,30 @@ class ProfileSummaryView extends GetView<ProfileSummaryController> {
     );
   }
 
-  Widget _buildSummaryCard({
-    required IconData icon,
-    required String title,
-    required String value,
-  }) {
+  Widget _buildSummaryCard({required IconData icon, required String title, required String value, required Color color}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[200]!),
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey[50],
+        border: Border.all(color: stroke),
+        borderRadius: BorderRadius.circular(14),
+        color: card,
       ),
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.indigo.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: Colors.indigo, size: 24),
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
-                  ),
-                ),
+                Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: muted)),
                 const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
+                Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
               ],
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:gym_trainer/app/modules/home/controllers/home_controller.dart';
 
@@ -100,7 +101,7 @@ class HomeScreen extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             const Icon(
-              Icons.chat_bubble_outline_rounded,
+              CupertinoIcons.chat_bubble,
               color: Colors.white,
               size: 22,
             ),
@@ -151,7 +152,7 @@ class HomeScreen extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             const Icon(
-              Icons.notifications_none_rounded,
+              CupertinoIcons.bell,
               color: Colors.white,
               size: 22,
             ),
@@ -225,7 +226,7 @@ class HomeScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.search, color: Colors.white.withOpacity(0.4), size: 22),
+            Icon(CupertinoIcons.search, color: Colors.white.withOpacity(0.4), size: 22),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -242,7 +243,7 @@ class HomeScreen extends StatelessWidget {
                 color: primaryPurple,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.tune, color: Colors.white, size: 16),
+              child: const Icon(CupertinoIcons.slider_horizontal_3, color: Colors.white, size: 16),
             ),
           ],
         ),
@@ -252,10 +253,10 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildCategoryTabs() {
     final categories = [
-      {'icon': Icons.fitness_center, 'label': 'Strength'},
-      {'icon': Icons.self_improvement, 'label': 'Yoga'},
-      {'icon': Icons.directions_run, 'label': 'Cardio'},
-      {'icon': Icons.sports_martial_arts, 'label': 'Boxing'},
+      {'icon': CupertinoIcons.sportscourt, 'label': 'Strength'},
+      {'icon': CupertinoIcons.person_2, 'label': 'Yoga'},
+      {'icon': CupertinoIcons.bolt, 'label': 'Cardio'},
+      {'icon': CupertinoIcons.hand_raised, 'label': 'Boxing'},
     ];
 
     return SizedBox(
@@ -361,7 +362,7 @@ class HomeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                Icons.fitness_center,
+                CupertinoIcons.sportscourt,
                 color: isConfirmed ? Colors.white : lightPurple,
                 size: 24,
               ),
@@ -449,7 +450,7 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(color: lightPurple, fontSize: 13),
               ),
               SizedBox(width: 4),
-              Icon(Icons.arrow_forward_ios, color: lightPurple, size: 11),
+              Icon(CupertinoIcons.chevron_forward, color: lightPurple, size: 11),
             ],
           ),
         ),
@@ -505,7 +506,7 @@ class HomeScreen extends StatelessWidget {
                       errorBuilder:
                           (_, __, ___) => const Center(
                             child: Icon(
-                              Icons.person,
+                              CupertinoIcons.person,
                               color: primaryPurple,
                               size: 40,
                             ),
@@ -566,7 +567,7 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.star, color: accentYellow, size: 14),
+                          const Icon(CupertinoIcons.star_fill, color: accentYellow, size: 14),
                           const SizedBox(width: 3),
                           Text(
                             '${trainer['rating']}',
@@ -599,10 +600,10 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildQuickActions() {
     final actions = [
-      {'icon': Icons.calendar_month, 'label': 'Book'},
-      {'icon': Icons.history, 'label': 'History'},
-      {'icon': Icons.payment, 'label': 'Payment'},
-      {'icon': Icons.headset_mic, 'label': 'Support'},
+      {'icon': CupertinoIcons.calendar, 'label': 'Book'},
+      {'icon': CupertinoIcons.time, 'label': 'History'},
+      {'icon': CupertinoIcons.creditcard, 'label': 'Payment'},
+      {'icon': CupertinoIcons.headphones, 'label': 'Support'},
     ];
 
     return Row(
@@ -714,7 +715,7 @@ class HomeScreen extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(Icons.local_offer, color: Colors.white, size: 40),
+            child: const Icon(CupertinoIcons.tag, color: Colors.white, size: 40),
           ),
         ],
       ),
