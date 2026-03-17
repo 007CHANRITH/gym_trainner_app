@@ -15,6 +15,9 @@ class AdminDashboardController extends GetxController {
   final isLoading = true.obs;
   final isActionLoading = false.obs;
   final selectedPanel = 0.obs;
+  final currentTab = 0.obs;
+
+  void changeTab(int index) => currentTab.value = index;
 
   final trainerApplications = <Map<String, dynamic>>[].obs;
   final users = <Map<String, dynamic>>[].obs;

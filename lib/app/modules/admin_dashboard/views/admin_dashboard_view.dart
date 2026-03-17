@@ -8,22 +8,49 @@ import '../controllers/admin_dashboard_controller.dart';
 class AdminDashboardView extends GetView<AdminDashboardController> {
   const AdminDashboardView({super.key});
 
+  // ── Tab metadata ─────────────────────────────────────────────────────────
+  static const _tabIcons = [
+    Icons.dashboard_customize_rounded, // Console – command-centre feel
+    Icons.manage_accounts_rounded, // Users   – admin account mgmt
+    Icons.event_available_rounded, // Bookings – schedule / sessions
+    Icons.account_balance_rounded, // Finance – bank / treasury
+    Icons.security_rounded, // Security – shield / audit
+  ];
+  static const _tabLabels = [
+    'Console',
+    'Users',
+    'Bookings',
+    'Finance',
+    'Security',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kInk,
+      // ── App Bar ────────────────────────────────────────────────────────
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          'Admin Console',
-          style: GoogleFonts.dmSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+        title: Obx(
+          () => Text(
+            'Admin ${_tabLabels[controller.currentTab.value]}',
+            style: GoogleFonts.dmSans(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: controller.logout,
+            icon: const Icon(Icons.logout_rounded, color: Colors.white),
+            tooltip: 'Logout',
+          ),
+        ],
       ),
+      // ── Body ──────────────────────────────────────────────────────────
       body: Stack(
         children: [
           Positioned.fill(child: liquidBackground()),
@@ -42,310 +69,113 @@ class AdminDashboardView extends GetView<AdminDashboardController> {
             left: -90,
             child: GlowOrb(color: kSky, radius: 240),
           ),
-          SafeArea(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(
-                  child: CircularProgressIndicator(color: kNeon),
-                );
-              }
-
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                children: [
-                  _HeaderCard(controller: controller),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Today Overview',
-                    style: GoogleFonts.dmSans(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _KpiCard(
-                          title: 'Active Trainers',
-                          value: '${controller.activeTrainersCount.value}',
-                          delta:
-                              '${controller.pendingTrainerApplicationsCount.value} pending approvals',
-                          accent: kNeon,
-                          onTap:
-                              () => Get.to(
-                                () => _AdminModulePage(
-                                  title: 'Trainer Applications',
-                                  child: _TrainerApplicationsPanel(
-                                    controller: controller,
-                                  ),
-                                ),
-                              ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _KpiCard(
-                          title: 'Open Bookings',
-                          value: '${controller.openBookingsCount.value}',
-                          delta: 'Live across the platform',
-                          accent: kSky,
-                          onTap:
-                              () => Get.to(
-                                () => _AdminModulePage(
-                                  title: 'Booking Monitor',
-                                  child: _BookingMonitorPanel(
-                                    controller: controller,
-                                  ),
-                                ),
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _KpiCard(
-                          title: 'Monthly Revenue',
-                          value: _formatCurrency(
-                            controller.monthlyRevenue.value,
-                          ),
-                          delta: 'From completed or paid bookings',
-                          accent: kLilac,
-                          onTap:
-                              () => Get.to(
-                                () => _AdminModulePage(
-                                  title: 'Finance Operations',
-                                  child: _FinancePanel(controller: controller),
-                                ),
-                              ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _KpiCard(
-                          title: 'Support Tickets',
-                          value: '${controller.supportOpenCount.value}',
-                          delta: 'Open / pending queue',
-                          accent: kCoral,
-                          onTap:
-                              () => Get.to(
-                                () => _AdminModulePage(
-                                  title: 'Support Tickets',
-                                  child: _SupportTicketsPanel(
-                                    controller: controller,
-                                  ),
-                                ),
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    'Quick Actions',
-                    style: GoogleFonts.dmSans(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _ActionTile(
-                    icon: Icons.verified_user_rounded,
-                    title: 'Trainer Applications',
-                    subtitle: 'Approve or reject trainer onboarding requests',
-                    accent: kNeon,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'Trainer Applications',
-                            child: _TrainerApplicationsPanel(
-                              controller: controller,
-                            ),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.people_alt_rounded,
-                    title: 'User Management',
-                    subtitle: 'Suspend or reactivate user accounts',
-                    accent: kSky,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'User Management',
-                            child: _UserManagementPanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.event_note_rounded,
-                    title: 'Booking Monitor',
-                    subtitle: 'Review and cancel problematic bookings',
-                    accent: kLilac,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'Booking Monitor',
-                            child: _BookingMonitorPanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.bar_chart_rounded,
-                    title: 'Reports & Analytics',
-                    subtitle: 'Platform KPIs and operational snapshot',
-                    accent: kCoral,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'Reports & Analytics',
-                            child: _AnalyticsPanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.support_agent_rounded,
-                    title: 'Support Tickets',
-                    subtitle: 'Track SLA, assign and resolve support requests',
-                    accent: kSky,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'Support Tickets',
-                            child: _SupportTicketsPanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.gavel_rounded,
-                    title: 'Disputes Center',
-                    subtitle: 'Assign disputes and close resolution workflow',
-                    accent: kLilac,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'Disputes Center',
-                            child: _DisputesPanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.account_balance_wallet_rounded,
-                    title: 'Finance Operations',
-                    subtitle: 'Refund approvals and payout processing',
-                    accent: kNeon,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'Finance Operations',
-                            child: _FinancePanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.privacy_tip_rounded,
-                    title: 'GDPR Queue',
-                    subtitle: 'Verify identity and complete GDPR requests',
-                    accent: kCoral,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'GDPR Queue',
-                            child: _GdprPanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.fact_check_rounded,
-                    title: 'Audit Logs',
-                    subtitle: 'Immutable timeline of admin actions',
-                    accent: kSky,
-                    onTap:
-                        () => Get.to(
-                          () => _AdminModulePage(
-                            title: 'Audit Logs',
-                            child: _AuditLogsPanel(controller: controller),
-                          ),
-                        ),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    'Recent Activity',
-                    style: GoogleFonts.dmSans(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ...controller.recentActivity.map(
-                    (item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: _ActivityTile(
-                        title: item['title'] ?? 'Activity',
-                        subtitle: item['subtitle'] ?? 'No details',
-                        time: item['time'] ?? 'Now',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  OutlinedButton.icon(
-                    onPressed:
-                        controller.isActionLoading.value
-                            ? null
-                            : controller.logout,
-                    icon:
-                        controller.isActionLoading.value
-                            ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                            : const Icon(
-                              Icons.logout_rounded,
-                              color: Colors.white,
-                            ),
-                    label: Text(
-                      'Log Out',
-                      style: GoogleFonts.dmSans(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
-                      side: BorderSide(color: Colors.white.withOpacity(0.35)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                    ),
-                  ),
-                ],
+          Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(
+                child: CircularProgressIndicator(color: kNeon),
               );
-            }),
-          ),
+            }
+            return IndexedStack(
+              index: controller.currentTab.value,
+              children: [
+                _ConsoleTab(controller: controller),
+                _UsersTab(controller: controller),
+                _BookingsTab(controller: controller),
+                _FinanceTab(controller: controller),
+                _SecurityTab(controller: controller),
+              ],
+            );
+          }),
         ],
+      ),
+      // ── Bottom Navigation Bar ─────────────────────────────────────────
+      bottomNavigationBar: Obx(
+        () => SafeArea(
+          top: false,
+          child: Container(
+            height: 84,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF111118),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.35),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: List.generate(_tabIcons.length, (index) {
+                final isActive = controller.currentTab.value == index;
+                // Each tab gets its own accent colour
+                final accent =
+                    const [kNeon, kSky, kLilac, kNeon, kCoral][index];
+                return Expanded(
+                  child: InkWell(
+                    onTap: () => controller.changeTab(index),
+                    borderRadius: BorderRadius.circular(14),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOut,
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOut,
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: isActive ? accent : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow:
+                                  isActive
+                                      ? [
+                                        BoxShadow(
+                                          color: accent.withValues(alpha: 0.35),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ]
+                                      : [],
+                            ),
+                            child: Icon(
+                              _tabIcons[index],
+                              size: 20,
+                              color: isActive ? kInk : kMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            _tabLabels[index],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.dmSans(
+                              color: isActive ? accent : kMuted,
+                              fontWeight:
+                                  isActive ? FontWeight.w700 : FontWeight.w500,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  static String _formatCurrency(double amount) {
+  static String formatCurrency(double amount) {
     if (amount >= 1000) {
       final compact = (amount / 1000).toStringAsFixed(1);
       return '\$${compact}K';
@@ -376,52 +206,190 @@ class AdminDashboardView extends GetView<AdminDashboardController> {
   }
 }
 
-class _AdminModulePage extends StatelessWidget {
-  const _AdminModulePage({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 0 – Console (main overview)
+// ══════════════════════════════════════════════════════════════════════════════
+class _ConsoleTab extends StatelessWidget {
+  const _ConsoleTab({required this.controller});
+  final AdminDashboardController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kInk,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          title,
-          style: GoogleFonts.dmSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: Stack(
-        children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            left: -110,
-            child: GlowOrb(color: kNeon, radius: 300),
-          ),
-          Positioned(
-            top: 220,
-            right: -120,
-            child: GlowOrb(color: kLilac, radius: 250),
-          ),
-          Positioned(
-            bottom: -140,
-            left: -90,
-            child: GlowOrb(color: kSky, radius: 240),
-          ),
-          SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              children: [child],
+    return SafeArea(
+      child: Obx(() {
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+          children: [
+            _HeaderCard(controller: controller),
+            const SizedBox(height: 16),
+            Text(
+              'Today Overview',
+              style: GoogleFonts.dmSans(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _KpiCard(
+                    title: 'Active Trainers',
+                    value: '${controller.activeTrainersCount.value}',
+                    delta:
+                        '${controller.pendingTrainerApplicationsCount.value} pending approvals',
+                    accent: kNeon,
+                    onTap: () => controller.changeTab(1),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _KpiCard(
+                    title: 'Open Bookings',
+                    value: '${controller.openBookingsCount.value}',
+                    delta: 'Live across the platform',
+                    accent: kSky,
+                    onTap: () => controller.changeTab(2),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _KpiCard(
+                    title: 'Monthly Revenue',
+                    value: AdminDashboardView.formatCurrency(
+                      controller.monthlyRevenue.value,
+                    ),
+                    delta: 'From completed bookings',
+                    accent: kLilac,
+                    onTap: () => controller.changeTab(3),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _KpiCard(
+                    title: 'Support Tickets',
+                    value: '${controller.supportOpenCount.value}',
+                    delta: 'Open / pending queue',
+                    accent: kCoral,
+                    onTap: () => controller.changeTab(4),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Text(
+              'Recent Activity',
+              style: GoogleFonts.dmSans(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...controller.recentActivity.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _ActivityTile(
+                  title: item['title'] ?? 'Activity',
+                  subtitle: item['subtitle'] ?? '',
+                  time: item['time'] ?? 'Now',
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 1 – Users
+// ══════════════════════════════════════════════════════════════════════════════
+class _UsersTab extends StatelessWidget {
+  const _UsersTab({required this.controller});
+  final AdminDashboardController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+        children: [
+          _TrainerApplicationsPanel(controller: controller),
+          const SizedBox(height: 16),
+          _UserManagementPanel(controller: controller),
+        ],
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 2 – Bookings
+// ══════════════════════════════════════════════════════════════════════════════
+class _BookingsTab extends StatelessWidget {
+  const _BookingsTab({required this.controller});
+  final AdminDashboardController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+        children: [
+          _BookingMonitorPanel(controller: controller),
+          const SizedBox(height: 16),
+          _AnalyticsPanel(controller: controller),
+        ],
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 3 – Finance
+// ══════════════════════════════════════════════════════════════════════════════
+class _FinanceTab extends StatelessWidget {
+  const _FinanceTab({required this.controller});
+  final AdminDashboardController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+        children: [_FinancePanel(controller: controller)],
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 4 – Security (disputes + GDPR + audit logs)
+// ══════════════════════════════════════════════════════════════════════════════
+class _SecurityTab extends StatelessWidget {
+  const _SecurityTab({required this.controller});
+  final AdminDashboardController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+        children: [
+          _SupportTicketsPanel(controller: controller),
+          const SizedBox(height: 16),
+          _DisputesPanel(controller: controller),
+          const SizedBox(height: 16),
+          _GdprPanel(controller: controller),
+          const SizedBox(height: 16),
+          _AuditLogsPanel(controller: controller),
         ],
       ),
     );
@@ -469,8 +437,8 @@ class _TrainerApplicationsPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                color: Colors.white.withOpacity(0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                color: Colors.white.withValues(alpha: 0.02),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,7 +476,9 @@ class _TrainerApplicationsPanel extends StatelessWidget {
                                     ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: kCoral,
-                              side: BorderSide(color: kCoral.withOpacity(0.55)),
+                              side: BorderSide(
+                                color: kCoral.withValues(alpha: 0.55),
+                              ),
                             ),
                             child: const Text('Reject'),
                           ),
@@ -589,8 +559,8 @@ class _UserManagementPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                color: Colors.white.withOpacity(0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                color: Colors.white.withValues(alpha: 0.02),
               ),
               child: Row(
                 children: [
@@ -693,8 +663,8 @@ class _BookingMonitorPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                color: Colors.white.withOpacity(0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                color: Colors.white.withValues(alpha: 0.02),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -793,8 +763,8 @@ class _SupportTicketsPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                color: Colors.white.withOpacity(0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                color: Colors.white.withValues(alpha: 0.02),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -906,8 +876,8 @@ class _DisputesPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                color: Colors.white.withOpacity(0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                color: Colors.white.withValues(alpha: 0.02),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1028,8 +998,10 @@ class _FinancePanel extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
-                  color: Colors.white.withOpacity(0.02),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
+                  color: Colors.white.withValues(alpha: 0.02),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1117,8 +1089,10 @@ class _FinancePanel extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
-                  color: Colors.white.withOpacity(0.02),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
+                  color: Colors.white.withValues(alpha: 0.02),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1230,8 +1204,8 @@ class _GdprPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                color: Colors.white.withOpacity(0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                color: Colors.white.withValues(alpha: 0.02),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1333,8 +1307,8 @@ class _AuditLogsPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                color: Colors.white.withOpacity(0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                color: Colors.white.withValues(alpha: 0.02),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1432,7 +1406,7 @@ class _AnalyticsPanel extends StatelessWidget {
           ),
           _MetricRow(
             label: 'Monthly Revenue',
-            value: AdminDashboardView._formatCurrency(
+            value: AdminDashboardView.formatCurrency(
               controller.monthlyRevenue.value,
             ),
           ),
@@ -1541,9 +1515,9 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.45)),
+        border: Border.all(color: color.withValues(alpha: 0.45)),
       ),
       child: Text(
         status,
@@ -1575,7 +1549,10 @@ class _HeaderCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
-                colors: [kNeon.withOpacity(0.85), kSky.withOpacity(0.85)],
+                colors: [
+                  kNeon.withValues(alpha: 0.85),
+                  kSky.withValues(alpha: 0.85),
+                ],
               ),
             ),
             child: const Icon(Icons.admin_panel_settings_rounded, color: kInk),
@@ -1653,7 +1630,7 @@ class _KpiCard extends StatelessWidget {
           Text(
             delta,
             style: GoogleFonts.dmSans(
-              color: accent.withOpacity(0.95),
+              color: accent.withValues(alpha: 0.95),
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -1668,69 +1645,6 @@ class _KpiCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: content,
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.accent,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color accent;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: LiquidTile(
-        radius: 18,
-        accent: accent,
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: accent.withOpacity(0.18),
-              ),
-              child: Icon(icon, color: accent),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.dmSans(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.dmSans(color: kMuted, fontSize: 12.5),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 6),
-            const Icon(Icons.chevron_right_rounded, color: Colors.white70),
-          ],
-        ),
-      ),
     );
   }
 }
