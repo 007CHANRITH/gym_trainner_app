@@ -21,22 +21,7 @@ class ActivityLevelView extends GetView<ActivityLevelController> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            left: -100,
-            child: GlowOrb(color: kCoral, radius: 280),
-          ),
-          Positioned(
-            bottom: -100,
-            right: -80,
-            child: GlowOrb(color: kNeon, radius: 230),
-          ),
-          Positioned(
-            top: 310,
-            left: -50,
-            child: GlowOrb(color: kSky, radius: 140),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

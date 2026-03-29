@@ -473,22 +473,7 @@ class SettingsView extends GetView<SettingsController> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            right: -110,
-            child: GlowOrb(color: kNeon, radius: 300),
-          ),
-          Positioned(
-            bottom: -140,
-            left: -90,
-            child: GlowOrb(color: kLilac, radius: 250),
-          ),
-          Positioned(
-            top: 290,
-            left: -70,
-            child: GlowOrb(color: kSky, radius: 170),
-          ),
+          Positioned.fill(child: trainerBackground()),
           ListView(
             padding: EdgeInsets.fromLTRB(
               20,

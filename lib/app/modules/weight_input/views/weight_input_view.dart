@@ -20,22 +20,7 @@ class WeightInputView extends GetView<WeightInputController> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            right: -100,
-            child: GlowOrb(color: kCoral, radius: 270),
-          ),
-          Positioned(
-            bottom: -100,
-            left: -80,
-            child: GlowOrb(color: kNeon, radius: 230),
-          ),
-          Positioned(
-            top: 300,
-            left: -40,
-            child: GlowOrb(color: kLilac, radius: 130),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),

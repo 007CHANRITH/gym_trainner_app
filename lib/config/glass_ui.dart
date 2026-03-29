@@ -26,6 +26,19 @@ Widget liquidBackground() => Container(
   ),
 );
 
+/// Trainer background (simpler/darker, no glow orbs).
+/// Place as Positioned.fill at the bottom of trainer screens.
+Widget trainerBackground() => Container(
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [kInk, Color.lerp(kInk, kMuted, 0.18) ?? kInk, kInk],
+      stops: const [0.0, 0.55, 1.0],
+    ),
+  ),
+);
+
 // ── Glow orb ──────────────────────────────────────────────────────────────────
 class GlowOrb extends StatelessWidget {
   final Color color;

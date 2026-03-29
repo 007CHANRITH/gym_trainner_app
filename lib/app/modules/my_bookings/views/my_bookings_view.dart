@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../controllers/my_bookings_controller.dart';
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
@@ -36,41 +37,46 @@ class MyBookingsView extends GetView<MyBookingsController> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          _buildTabs(),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Obx(() {
-              final list =
-                  controller.tabIndex.value == 0
-                      ? controller.upcomingBookings
-                      : controller.pastBookings;
-              if (list.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        CupertinoIcons.calendar_badge_minus,
-                        color: muted,
-                        size: 56,
+          Positioned.fill(child: trainerBackground()),
+          Column(
+            children: [
+              _buildTabs(),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Obx(() {
+                  final list =
+                      controller.tabIndex.value == 0
+                          ? controller.upcomingBookings
+                          : controller.pastBookings;
+                  if (list.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            CupertinoIcons.calendar_badge_minus,
+                            color: muted,
+                            size: 56,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No bookings here',
+                            style: TextStyle(color: muted, fontSize: 16),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No bookings here',
-                        style: TextStyle(color: muted, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
-                itemCount: list.length,
-                itemBuilder: (_, i) => _buildBookingCard(list[i], i),
-              );
-            }),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
+                    itemCount: list.length,
+                    itemBuilder: (_, i) => _buildBookingCard(list[i], i),
+                  );
+                }),
+              ),
+            ],
           ),
         ],
       ),

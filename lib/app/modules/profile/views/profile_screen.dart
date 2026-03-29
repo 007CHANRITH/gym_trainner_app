@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../../../services/user_profile_service.dart';
 
 const Color ink = Color(0xFF0A0A0F);
@@ -154,23 +155,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ink,
-      body: SafeArea(
-        bottom: false,
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 24),
-            _buildProfileCard(),
-            const SizedBox(height: 24),
-            _buildQuickStats(),
-            const SizedBox(height: 24),
-            _buildGoalsSection(),
-            const SizedBox(height: 24),
-            _buildMenuSection(),
-          ],
-        ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: ListView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 24),
+                _buildProfileCard(),
+                const SizedBox(height: 24),
+                _buildQuickStats(),
+                const SizedBox(height: 24),
+                _buildGoalsSection(),
+                const SizedBox(height: 24),
+                _buildMenuSection(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

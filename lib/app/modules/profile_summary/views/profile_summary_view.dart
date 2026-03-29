@@ -364,32 +364,7 @@ class ProfileSummaryView extends GetView<ProfileSummaryController> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF121021),
-                    Color(0xFF0D1226),
-                    Color(0xFF090B14),
-                  ],
-                  stops: [0.0, 0.55, 1.0],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: -120,
-            right: -140,
-            child: GlowOrb(color: kLilac, radius: 260),
-          ),
-          Positioned(
-            bottom: -120,
-            left: -90,
-            child: GlowOrb(color: kSky, radius: 220),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

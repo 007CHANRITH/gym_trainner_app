@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../controllers/book_session_controller.dart';
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
@@ -54,41 +55,46 @@ class BookSessionView extends GetView<BookSessionController> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTrainerCard(),
-            const SizedBox(height: 24),
-            _buildSectionLabel('Session Type'),
-            const SizedBox(height: 12),
-            _buildSessionTypes(),
-            const SizedBox(height: 24),
-            _buildSectionLabel('Select Date'),
-            const SizedBox(height: 12),
-            _buildDatePicker(context),
-            const SizedBox(height: 10),
-            _buildQuickDateChips(),
-            const SizedBox(height: 24),
-            _buildSectionLabel('Morning'),
-            const SizedBox(height: 12),
-            _buildSlots(controller.morningSlots),
-            const SizedBox(height: 20),
-            _buildSectionLabel('Afternoon'),
-            const SizedBox(height: 12),
-            _buildSlots(controller.afternoonSlots),
-            const SizedBox(height: 20),
-            _buildSectionLabel('Evening'),
-            const SizedBox(height: 12),
-            _buildSlots(controller.eveningSlots),
-            const SizedBox(height: 26),
-            _buildBookingSummary(),
-            const SizedBox(height: 32),
-            _buildConfirmButton(),
-            const SizedBox(height: 40),
-          ],
-        ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTrainerCard(),
+                const SizedBox(height: 24),
+                _buildSectionLabel('Session Type'),
+                const SizedBox(height: 12),
+                _buildSessionTypes(),
+                const SizedBox(height: 24),
+                _buildSectionLabel('Select Date'),
+                const SizedBox(height: 12),
+                _buildDatePicker(context),
+                const SizedBox(height: 10),
+                _buildQuickDateChips(),
+                const SizedBox(height: 24),
+                _buildSectionLabel('Morning'),
+                const SizedBox(height: 12),
+                _buildSlots(controller.morningSlots),
+                const SizedBox(height: 20),
+                _buildSectionLabel('Afternoon'),
+                const SizedBox(height: 12),
+                _buildSlots(controller.afternoonSlots),
+                const SizedBox(height: 20),
+                _buildSectionLabel('Evening'),
+                const SizedBox(height: 12),
+                _buildSlots(controller.eveningSlots),
+                const SizedBox(height: 26),
+                _buildBookingSummary(),
+                const SizedBox(height: 32),
+                _buildConfirmButton(),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

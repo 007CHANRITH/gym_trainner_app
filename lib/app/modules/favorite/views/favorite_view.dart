@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../../my_bookings/controllers/my_bookings_controller.dart';
 import '../../wallet/controllers/wallet_controller.dart';
 import '../../../services/favourites_service.dart';
@@ -47,22 +48,27 @@ class _FavouriteViewState extends State<FavouriteView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ink,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 24),
-            _buildMainTabs(),
-            const SizedBox(height: 20),
-            Expanded(
-              child:
-                  _mainTab == 0
-                      ? _buildFavouritesList()
-                      : _buildBookingsSection(),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 24),
+                _buildMainTabs(),
+                const SizedBox(height: 20),
+                Expanded(
+                  child:
+                      _mainTab == 0
+                          ? _buildFavouritesList()
+                          : _buildBookingsSection(),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

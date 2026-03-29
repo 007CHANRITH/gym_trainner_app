@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 
 // ─── Design Tokens ─────────────────────────────────────────────────────────
 const Color ink = Color(0xFF0A0A0F);
@@ -91,29 +92,36 @@ class _MessagingScreenState extends State<MessagingScreen> {
         _conversations.where((c) => (c['unread'] as int) > 0).length;
     return Scaffold(
       backgroundColor: ink,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _buildHeader(unreadCount),
-            const SizedBox(height: 24),
-            _buildTabs(),
-            const SizedBox(height: 20),
-            Expanded(
-              child:
-                  _filtered.isEmpty
-                      ? _buildEmptyState()
-                      : ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                        itemCount: _filtered.length,
-                        itemBuilder:
-                            (context, index) =>
-                                _buildConversationCard(_filtered[index], index),
-                      ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                _buildHeader(unreadCount),
+                const SizedBox(height: 24),
+                _buildTabs(),
+                const SizedBox(height: 20),
+                Expanded(
+                  child:
+                      _filtered.isEmpty
+                          ? _buildEmptyState()
+                          : ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                            itemCount: _filtered.length,
+                            itemBuilder:
+                                (context, index) => _buildConversationCard(
+                                  _filtered[index],
+                                  index,
+                                ),
+                          ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

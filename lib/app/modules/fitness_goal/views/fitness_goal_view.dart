@@ -21,22 +21,7 @@ class FitnessGoalView extends GetView<FitnessGoalController> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            left: -100,
-            child: GlowOrb(color: kLilac, radius: 280),
-          ),
-          Positioned(
-            bottom: -100,
-            right: -80,
-            child: GlowOrb(color: kPink, radius: 230),
-          ),
-          Positioned(
-            top: 310,
-            right: -50,
-            child: GlowOrb(color: kNeon, radius: 140),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

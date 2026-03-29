@@ -9,6 +9,7 @@ import 'package:gym_trainer/app/modules/profile/views/profile_screen.dart';
 import 'package:gym_trainer/app/modules/messaging/views/messaging_screen.dart';
 import '../../../services/favourites_service.dart';
 import '../controllers/home_controller.dart';
+import '../../../../config/glass_ui.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -44,11 +45,13 @@ class HomeView extends GetView<HomeController> {
 
     return Obx(
       () => Scaffold(
-        backgroundColor: ink,
+        backgroundColor: Colors.transparent,
         extendBody: true,
-        body: IndexedStack(
-          index: controller.currentIndex.value,
-          children: pages,
+        body: Stack(
+          children: [
+            Positioned.fill(child: trainerBackground()),
+            IndexedStack(index: controller.currentIndex.value, children: pages),
+          ],
         ),
         bottomNavigationBar: AnimatedBottomNavigationBar.builder(
           backgroundColor: surface,

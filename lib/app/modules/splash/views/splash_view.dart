@@ -200,11 +200,12 @@ class _SplashBodyState extends State<_SplashBody>
                               ),
                               alignment: Alignment.center,
                               child: ShaderMask(
-                                shaderCallback: (bounds) => LinearGradient(
-                                  colors: [Colors.white, kNeon],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ).createShader(bounds),
+                                shaderCallback:
+                                    (bounds) => LinearGradient(
+                                      colors: [Colors.white, kNeon],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ).createShader(bounds),
                                 child: const Icon(
                                   Icons.fitness_center_rounded,
                                   size: 54,
@@ -267,11 +268,12 @@ class _SplashBodyState extends State<_SplashBody>
               final progress = _loadBar.value;
               // Running step: quick rise (0–30%), quick land (30–60%), ground pause (60–100%)
               final t = _bounceCtrl.value;
-              final stepFactor = t < 0.30
-                  ? t / 0.30
-                  : t < 0.60
-                  ? 1.0 - (t - 0.30) / 0.30
-                  : 0.0;
+              final stepFactor =
+                  t < 0.30
+                      ? t / 0.30
+                      : t < 0.60
+                      ? 1.0 - (t - 0.30) / 0.30
+                      : 0.0;
               final bounce = stepFactor * 7.0;
               return SizedBox(
                 height: 48,
@@ -302,10 +304,7 @@ class _SplashBodyState extends State<_SplashBody>
                           left: 0,
                           child: Container(
                             height: 2,
-                            width: (runnerX + iconSize / 2).clamp(
-                              0,
-                              trackW,
-                            ),
+                            width: (runnerX + iconSize / 2).clamp(0, trackW),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [kNeon, kSky],

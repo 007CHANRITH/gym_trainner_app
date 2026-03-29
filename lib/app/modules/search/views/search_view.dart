@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../controllers/search_controller.dart' as sc;
 import '../../../services/favourites_service.dart';
 
@@ -23,19 +24,24 @@ class SearchView extends GetView<sc.SearchController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ink,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 16),
-            _buildSearchBar(),
-            const SizedBox(height: 16),
-            _buildSpecialtyChips(),
-            const SizedBox(height: 16),
-            Expanded(child: _buildResults()),
-          ],
-        ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 16),
+                _buildSearchBar(),
+                const SizedBox(height: 16),
+                _buildSpecialtyChips(),
+                const SizedBox(height: 16),
+                Expanded(child: _buildResults()),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

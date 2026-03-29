@@ -15,22 +15,7 @@ class GetStartedView extends GetView<GetStartedController> {
       backgroundColor: kInk,
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            left: -120,
-            child: GlowOrb(color: kSky, radius: 280),
-          ),
-          Positioned(
-            bottom: -120,
-            right: -80,
-            child: GlowOrb(color: kNeon, radius: 230),
-          ),
-          Positioned(
-            top: 320,
-            right: -60,
-            child: GlowOrb(color: kLilac, radius: 140),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),

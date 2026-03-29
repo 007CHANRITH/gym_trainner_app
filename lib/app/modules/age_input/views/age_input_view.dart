@@ -17,22 +17,7 @@ class AgeInputView extends GetView<AgeInputController> {
       appBar: glassAppBar(title: 'Your Age', onBack: () => controller.goBack()),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            left: -100,
-            child: GlowOrb(color: kNeon, radius: 270),
-          ),
-          Positioned(
-            bottom: -100,
-            right: -80,
-            child: GlowOrb(color: kLilac, radius: 230),
-          ),
-          Positioned(
-            top: 300,
-            right: -40,
-            child: GlowOrb(color: kSky, radius: 130),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),

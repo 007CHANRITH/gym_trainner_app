@@ -61,17 +61,7 @@ class TrainerDashboardView extends GetView<TrainerDashboardController> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -120,
-            right: -100,
-            child: GlowOrb(color: kNeon, radius: 220),
-          ),
-          Positioned(
-            bottom: -130,
-            left: -80,
-            child: GlowOrb(color: kSky, radius: 190),
-          ),
+          Positioned.fill(child: trainerBackground()),
           Obx(() {
             if (controller.isLoading.value) {
               return const Center(
@@ -556,7 +546,9 @@ class _AvailabilityTab extends StatelessWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              childAspectRatio: 1.04,
+              // Make tiles taller to avoid bottom overflow.
+              // (childAspectRatio = width / height)
+              childAspectRatio: 0.82,
             ),
             itemBuilder: (_, index) {
               final day = _days[index];
@@ -627,7 +619,7 @@ class _AvailabilityTab extends StatelessWidget {
                               )
                               : null,
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
@@ -1469,6 +1461,7 @@ class _CreateTrainerPostScreenState extends State<_CreateTrainerPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     return Scaffold(
       backgroundColor: kInk,
       appBar: AppBar(
@@ -1484,21 +1477,12 @@ class _CreateTrainerPostScreenState extends State<_CreateTrainerPostScreen> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -110,
-            right: -80,
-            child: GlowOrb(color: kNeon, radius: 190),
-          ),
-          Positioned(
-            bottom: -120,
-            left: -90,
-            child: GlowOrb(color: kSky, radius: 170),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             top: false,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 18),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.fromLTRB(16, 4, 16, 18 + bottomInset),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1611,6 +1595,7 @@ class _CreateTrainerPostScreenState extends State<_CreateTrainerPostScreen> {
                     initialValue: _selectedCategory,
                     dropdownColor: const Color(0xFF191923),
                     style: const TextStyle(color: Colors.white),
+                    isExpanded: true,
                     decoration: glassFieldDecoration(
                       hint: 'Post category',
                       icon: Icons.category_rounded,
@@ -1991,6 +1976,7 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.sizeOf(context).width < 360;
     final email =
         (controller.profile['email'] ??
                 controller.profile['trainerEmail'] ??
@@ -2009,11 +1995,11 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
           child: _topBackButton(),
         ),
         title: Text(
-          'Profile Summary',
+          'Trainer Profile',
           style: GoogleFonts.dmSans(
             color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 30,
+            fontWeight: FontWeight.w800,
+            fontSize: isCompact ? 18 : 20,
           ),
         ),
       ),
@@ -2037,7 +2023,7 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: _bottomAction(
-                  label: 'Continue',
+                  label: 'Save',
                   color: kNeon,
                   neonStyle: true,
                   onTap: !_isEditing ? null : _saveProfile,
@@ -2049,17 +2035,7 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -120,
-            right: -100,
-            child: GlowOrb(color: kLilac, radius: 230),
-          ),
-          Positioned(
-            bottom: -140,
-            left: -80,
-            child: GlowOrb(color: kSky, radius: 190),
-          ),
+          Positioned.fill(child: trainerBackground()),
           ListView(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
@@ -2129,6 +2105,9 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
   }
 
   Widget _summaryHeroCard(String email) {
+    final isCompact = MediaQuery.sizeOf(context).width < 360;
+    final avatarSize = isCompact ? 84.0 : 96.0;
+    final nameSize = isCompact ? 26.0 : 32.0;
     return LiquidTile(
       radius: 24,
       accent: kLilac,
@@ -2148,15 +2127,15 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(45),
                     child: SizedBox(
-                      width: 90,
-                      height: 90,
+                      width: avatarSize,
+                      height: avatarSize,
                       child:
                           photoUrl.isNotEmpty
                               ? CachedNetworkImage(
                                 imageUrl: photoUrl,
                                 fit: BoxFit.cover,
-                                memCacheWidth: 270,
-                                memCacheHeight: 270,
+                                memCacheWidth: (avatarSize * 3).round(),
+                                memCacheHeight: (avatarSize * 3).round(),
                                 errorWidget:
                                     (_, __, ___) => Container(
                                       color: const Color(0xFF1E1E28),
@@ -2209,10 +2188,12 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
           const SizedBox(height: 10),
           Obx(
             () => Text(
-              controller.displayName.value.toUpperCase(),
+              controller.displayName.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.dmSans(
                 color: Colors.white,
-                fontSize: 36,
+                fontSize: nameSize,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -2224,7 +2205,9 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Review your information before continuing',
+            _isEditing
+                ? 'Update your information, then press Continue'
+                : 'Tap Edit to update your information',
             style: GoogleFonts.dmSans(color: kMuted, fontSize: 12),
           ),
           const SizedBox(height: 10),
@@ -2247,6 +2230,7 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
     TextInputType? keyboardType,
     int maxLines = 1,
   }) {
+    final isCompact = MediaQuery.sizeOf(context).width < 360;
     return LiquidTile(
       radius: 20,
       accent: color,
@@ -2272,25 +2256,44 @@ class _TrainerProfileScreenState extends State<_TrainerProfileScreen> {
                   style: GoogleFonts.dmSans(color: kMuted, fontSize: 12),
                 ),
                 const SizedBox(height: 4),
-                if (_isEditing)
-                  TextField(
-                    controller: controller,
-                    keyboardType: keyboardType,
-                    maxLines: maxLines,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: glassFieldDecoration(hint: hint, icon: icon),
-                  )
-                else
-                  Text(
-                    controller.text.trim().isEmpty
-                        ? '-'
-                        : controller.text.trim(),
-                    style: GoogleFonts.dmSans(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
-                  ),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 160),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder:
+                      (child, anim) =>
+                          FadeTransition(opacity: anim, child: child),
+                  child:
+                      _isEditing
+                          ? TextField(
+                            key: const ValueKey('edit'),
+                            controller: controller,
+                            keyboardType: keyboardType,
+                            maxLines: maxLines,
+                            style: GoogleFonts.dmSans(
+                              color: Colors.white,
+                              fontSize: isCompact ? 13 : 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            decoration: glassFieldDecoration(
+                              hint: hint,
+                              icon: icon,
+                            ),
+                          )
+                          : Text(
+                            key: const ValueKey('view'),
+                            controller.text.trim().isEmpty
+                                ? '-'
+                                : controller.text.trim(),
+                            maxLines: maxLines,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.dmSans(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: isCompact ? 15 : 16,
+                            ),
+                          ),
+                ),
               ],
             ),
           ),
@@ -2505,17 +2508,7 @@ class _UserProfileInfoScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -120,
-            right: -100,
-            child: GlowOrb(color: kNeon, radius: 220),
-          ),
-          Positioned(
-            bottom: -130,
-            left: -80,
-            child: GlowOrb(color: kSky, radius: 190),
-          ),
+          Positioned.fill(child: trainerBackground()),
           ListView(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
             children: [

@@ -20,22 +20,7 @@ class SignUpView extends GetView<SignUpController> {
       appBar: glassAppBar(title: 'Create Account', onBack: () => Get.back()),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            left: -100,
-            child: GlowOrb(color: kLilac, radius: 280),
-          ),
-          Positioned(
-            bottom: -100,
-            right: -80,
-            child: GlowOrb(color: kPink, radius: 230),
-          ),
-          Positioned(
-            top: 340,
-            right: -50,
-            child: GlowOrb(color: kNeon, radius: 140),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),

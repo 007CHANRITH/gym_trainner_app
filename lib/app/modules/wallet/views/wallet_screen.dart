@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../controllers/wallet_controller.dart';
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
@@ -22,23 +23,28 @@ class WalletScreen extends GetView<WalletController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ink,
-      body: SafeArea(
-        bottom: false,
-        child: Obx(
-          () => ListView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 24),
-              _buildBalanceCard(),
-              const SizedBox(height: 24),
-              _buildQuickActions(context),
-              const SizedBox(height: 28),
-              _buildTransactionList(),
-            ],
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: Obx(
+              () => ListView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 24),
+                  _buildBalanceCard(),
+                  const SizedBox(height: 24),
+                  _buildQuickActions(context),
+                  const SizedBox(height: 28),
+                  _buildTransactionList(),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

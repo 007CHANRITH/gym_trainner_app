@@ -43,6 +43,15 @@ class AdminDashboardController extends GetxController {
 
   final recentActivity = <Map<String, String>>[].obs;
 
+  // ─── FILTER/SEARCH STATE ──────────────────────────────────────────────────
+  final searchUsersQuery = ''.obs;
+  final filterUsersStatus = 'active'.obs; // 'active', 'suspended', 'pending'
+  final sortUsersBy = 'createdAt'.obs; // 'createdAt', 'name', 'email'
+  final filterBookingsStatus = 'pending'.obs;
+  final filterBookingsTrainerId = ''.obs;
+  final filterBookingsDateFrom = Rx<DateTime?>(null);
+  final filterBookingsDateTo = Rx<DateTime?>(null);
+
   final _subscriptions = <StreamSubscription<dynamic>>[];
   static const int _dashboardCollectionLimit = 120;
   Timer? _kpiRecomputeDebounce;
@@ -429,110 +438,6 @@ class AdminDashboardController extends GetxController {
     recentActivity.assignAll(activity.take(5));
   }
 
-  Future<void> approveTrainerApplication(
-    Map<String, dynamic> application,
-  ) async {
-    final appId = application['id']?.toString();
-    if (appId == null || appId.isEmpty) return;
-    final userId = application['userId']?.toString();
-
-    await _guardedAction(
-      action: 'trainer_application.approve',
-      targetId: appId,
-      before: application,
-      run: () async {
-        await _firestore.collection('trainerApplications').doc(appId).set({
-          'status': 'approved',
-          'reviewedAt': FieldValue.serverTimestamp(),
-          'reviewedBy': FirebaseAuth.instance.currentUser?.uid,
-        }, SetOptions(merge: true));
-
-        if (userId != null && userId.isNotEmpty) {
-          await _firestore.collection('users').doc(userId).set({
-            'role': 'trainer',
-            'trainerApproved': true,
-            'accountStatus': 'active',
-          }, SetOptions(merge: true));
-        }
-      },
-      onSuccess: () {
-        Get.snackbar('Approved', 'Trainer application approved successfully.');
-      },
-    );
-  }
-
-  Future<void> rejectTrainerApplication(
-    Map<String, dynamic> application,
-  ) async {
-    final appId = application['id']?.toString();
-    if (appId == null || appId.isEmpty) return;
-
-    await _guardedAction(
-      action: 'trainer_application.reject',
-      targetId: appId,
-      before: application,
-      run: () async {
-        await _firestore.collection('trainerApplications').doc(appId).set({
-          'status': 'rejected',
-          'reviewedAt': FieldValue.serverTimestamp(),
-          'reviewedBy': FirebaseAuth.instance.currentUser?.uid,
-        }, SetOptions(merge: true));
-      },
-      onSuccess: () {
-        Get.snackbar('Rejected', 'Trainer application was rejected.');
-      },
-    );
-  }
-
-  Future<void> setUserSuspended(Map<String, dynamic> user, bool suspend) async {
-    final userId = user['id']?.toString();
-    if (userId == null || userId.isEmpty) return;
-
-    await _guardedAction(
-      action: suspend ? 'user.suspend' : 'user.reactivate',
-      targetId: userId,
-      before: user,
-      run: () async {
-        await _firestore.collection('users').doc(userId).set({
-          'accountStatus': suspend ? 'suspended' : 'active',
-          'updatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-      },
-      onSuccess: () {
-        Get.snackbar(
-          suspend ? 'User suspended' : 'User reactivated',
-          suspend
-              ? 'Account has been suspended.'
-              : 'Account access restored successfully.',
-        );
-      },
-    );
-  }
-
-  Future<void> cancelBooking(Map<String, dynamic> booking) async {
-    final bookingId = booking['id']?.toString();
-    if (bookingId == null || bookingId.isEmpty) return;
-
-    await _guardedAction(
-      action: 'booking.cancel',
-      targetId: bookingId,
-      before: booking,
-      run: () async {
-        await _firestore.collection('bookings').doc(bookingId).set({
-          'status': 'cancelled',
-          'cancelledBy': 'admin',
-          'cancelledAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-      },
-      onSuccess: () {
-        Get.snackbar(
-          'Booking cancelled',
-          'The booking was cancelled by admin.',
-        );
-      },
-    );
-  }
-
   Future<void> resolveSupportTicket(Map<String, dynamic> ticket) async {
     final ticketId = ticket['id']?.toString();
     if (ticketId == null || ticketId.isEmpty) return;
@@ -654,12 +559,34 @@ class AdminDashboardController extends GetxController {
     );
   }
 
-  Future<void> approvePayout(Map<String, dynamic> payout) async {
-    await _setPayoutStatus(payout, 'approved', 'Payout approved');
-  }
-
   Future<void> rejectPayout(Map<String, dynamic> payout) async {
     await _setPayoutStatus(payout, 'rejected', 'Payout rejected');
+  }
+
+  /// Set user suspension status - used by the inline suspend button
+  Future<void> setUserSuspended(Map<String, dynamic> user, bool suspend) async {
+    final userId = user['id']?.toString();
+    if (userId == null || userId.isEmpty) return;
+
+    await _guardedAction(
+      action: suspend ? 'user.suspend' : 'user.reactivate',
+      targetId: userId,
+      before: user,
+      run: () async {
+        await _firestore.collection('users').doc(userId).set({
+          'accountStatus': suspend ? 'suspended' : 'active',
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      },
+      onSuccess: () {
+        Get.snackbar(
+          suspend ? 'User suspended' : 'User reactivated',
+          suspend
+              ? 'Account has been suspended.'
+              : 'Account access restored successfully.',
+        );
+      },
+    );
   }
 
   Future<void> markPayoutPaid(Map<String, dynamic> payout) async {
@@ -807,6 +734,257 @@ class AdminDashboardController extends GetxController {
     if (value is String) return double.tryParse(value) ?? 0;
     return 0;
   }
+
+  // ─── WRAPPER METHODS FOR TAB COMPATIBILITY ────────────────────────────────
+
+  /// Suspend a user by their ID
+  Future<void> suspendUser(String userId, String reason) async {
+    if (userId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      final userList = users.where((u) => u['id'] == userId).toList();
+      if (userList.isEmpty) return;
+
+      final user = userList.first;
+      await _guardedAction(
+        action: 'user.suspend',
+        targetId: userId,
+        before: user,
+        run: () async {
+          await _firestore.collection('users').doc(userId).set({
+            'accountStatus': 'suspended',
+            'suspensionReason': reason,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+        },
+        onSuccess: () {
+          Get.snackbar('User suspended', 'Account has been suspended.');
+        },
+      );
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  /// Reactivate a user by their ID
+  Future<void> reactivateUser(String userId) async {
+    if (userId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      final userList = users.where((u) => u['id'] == userId).toList();
+      if (userList.isEmpty) return;
+
+      final user = userList.first;
+      await _guardedAction(
+        action: 'user.reactivate',
+        targetId: userId,
+        before: user,
+        run: () async {
+          await _firestore.collection('users').doc(userId).set({
+            'accountStatus': 'active',
+            'updatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+        },
+        onSuccess: () {
+          Get.snackbar('User reactivated', 'Account access restored.');
+        },
+      );
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  /// Load bookings (real-time listeners handle this)
+  Future<void> loadBookings() async {
+    // Real-time listeners in _listenCollections() handle loading
+  }
+
+  /// Cancel a booking by its ID
+  Future<void> cancelBooking(String bookingId, String reason) async {
+    if (bookingId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      final bookingList = bookings.where((b) => b['id'] == bookingId).toList();
+      if (bookingList.isEmpty) return;
+
+      final booking = bookingList.first;
+      await _guardedAction(
+        action: 'booking.cancel',
+        targetId: bookingId,
+        before: booking,
+        run: () async {
+          await _firestore.collection('bookings').doc(bookingId).set({
+            'status': 'cancelled',
+            'cancellationReason': reason,
+            'cancelledAt': FieldValue.serverTimestamp(),
+            'cancelledBy': FirebaseAuth.instance.currentUser?.uid,
+          }, SetOptions(merge: true));
+        },
+        onSuccess: () {
+          Get.snackbar('Booking cancelled', 'Booking has been cancelled.');
+        },
+      );
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  /// Reassign a booking to a different trainer
+  Future<void> reassignBooking(String bookingId, String trainerId) async {
+    if (bookingId.isEmpty || trainerId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      await _firestore.collection('bookings').doc(bookingId).set({
+        'trainerId': trainerId,
+        'reassignedAt': FieldValue.serverTimestamp(),
+        'reassignedBy': FirebaseAuth.instance.currentUser?.uid,
+      }, SetOptions(merge: true));
+      Get.snackbar('Reassigned', 'Booking reassigned to trainer.');
+    } catch (_) {
+      Get.snackbar('Error', 'Unable to reassign booking.');
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  /// Load trainer applications (real-time listeners handle this)
+  Future<void> loadTrainerApplications() async {
+    // Real-time listeners in _listenCollections() handle loading
+  }
+
+  /// Approve a trainer application by its ID
+  Future<void> approveTrainerApplication(String appId, String userId) async {
+    if (appId.isEmpty || userId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      final appList =
+          trainerApplications.where((a) => a['id'] == appId).toList();
+      if (appList.isEmpty) return;
+
+      final app = appList.first;
+      await _guardedAction(
+        action: 'trainer_application.approve',
+        targetId: appId,
+        before: app,
+        run: () async {
+          // Update application status
+          await _firestore.collection('trainerApplications').doc(appId).set({
+            'status': 'approved',
+            'reviewedAt': FieldValue.serverTimestamp(),
+            'reviewedBy': FirebaseAuth.instance.currentUser?.uid,
+          }, SetOptions(merge: true));
+
+          // Promote user to trainer role
+          await _firestore.collection('users').doc(userId).set({
+            'role': 'trainer',
+            'trainerApproved': true,
+            'accountStatus': 'active',
+          }, SetOptions(merge: true));
+        },
+        onSuccess: () {
+          Get.snackbar('Approved', 'Trainer application approved.');
+        },
+      );
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  /// Reject a trainer application by its ID
+  Future<void> rejectTrainerApplication(String appId, String notes) async {
+    if (appId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      final appList =
+          trainerApplications.where((a) => a['id'] == appId).toList();
+      if (appList.isEmpty) return;
+
+      final app = appList.first;
+      await _guardedAction(
+        action: 'trainer_application.reject',
+        targetId: appId,
+        before: app,
+        run: () async {
+          await _firestore.collection('trainerApplications').doc(appId).set({
+            'status': 'rejected',
+            'rejectionNotes': notes,
+            'reviewedAt': FieldValue.serverTimestamp(),
+            'reviewedBy': FirebaseAuth.instance.currentUser?.uid,
+          }, SetOptions(merge: true));
+        },
+        onSuccess: () {
+          Get.snackbar('Rejected', 'Trainer application rejected.');
+        },
+      );
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  /// Mark a payout as paid by its ID
+  Future<void> markPayoutAsPaid(String payoutId) async {
+    if (payoutId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      await _firestore.collection('payouts').doc(payoutId).set({
+        'status': 'paid',
+        'paidAt': FieldValue.serverTimestamp(),
+        'markedPaidBy': FirebaseAuth.instance.currentUser?.uid,
+      }, SetOptions(merge: true));
+      Get.snackbar('Marked paid', 'Payout marked as paid.');
+    } catch (_) {
+      Get.snackbar('Error', 'Unable to mark payout as paid.');
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  /// Load audit logs (real-time listeners handle this)
+  Future<void> loadAuditLogs() async {
+    // Real-time listeners in _listenCollections() handle loading
+  }
+
+  /// Search users by query (search filtering done in memories instead)
+  Future<void> searchUsers() async {
+    // The actual search filtering is done in the users_tab UI
+    // This method exists for tab compatibility
+  }
+
+  /// Approve a payout
+  Future<void> approvePayout(String payoutId) async {
+    if (payoutId.isEmpty) return;
+
+    isActionLoading.value = true;
+    try {
+      final payoutList = payouts.where((p) => p['id'] == payoutId).toList();
+      if (payoutList.isEmpty) return;
+
+      await _firestore.collection('payouts').doc(payoutId).set({
+        'status': 'approved',
+        'approvedAt': FieldValue.serverTimestamp(),
+        'approvedBy': FirebaseAuth.instance.currentUser?.uid,
+      }, SetOptions(merge: true));
+      Get.snackbar('Approved', 'Payout approved successfully.');
+    } catch (_) {
+      Get.snackbar('Error', 'Unable to approve payout.');
+    } finally {
+      isActionLoading.value = false;
+    }
+  }
+
+  // ─── ALIASES FOR COMPATIBILITY ────────────────────────────────────────────
+  RxBool get loadingUsers => isActionLoading;
+  RxBool get loadingApplications => isActionLoading;
+  RxBool get actionLoading => isActionLoading;
+  RxBool get loadingBookings => isActionLoading;
+  RxBool get loadingFinance => isActionLoading;
 
   Future<void> logout() async {
     await FirebaseAuth.instance.signOut();

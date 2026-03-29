@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 
 const Color ink = Color(0xFF0A0A0F);
 const Color card = Color(0xFF17171F);
@@ -104,16 +105,21 @@ class _MessagingScreenState extends State<MessagingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ink,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _buildHeader(context),
-            _buildSessionBanner(),
-            Expanded(child: _buildList()),
-            _buildInputBar(),
-          ],
-        ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                _buildHeader(context),
+                _buildSessionBanner(),
+                Expanded(child: _buildList()),
+                _buildInputBar(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

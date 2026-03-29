@@ -21,22 +21,7 @@ class LoginView extends GetView<LoginController> {
       appBar: glassAppBar(title: 'Welcome Back', onBack: () => Get.back()),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            left: -100,
-            child: GlowOrb(color: kNeon, radius: 280),
-          ),
-          Positioned(
-            bottom: -100,
-            right: -80,
-            child: GlowOrb(color: kLilac, radius: 240),
-          ),
-          Positioned(
-            top: 340,
-            right: -50,
-            child: GlowOrb(color: kSky, radius: 140),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -159,7 +144,7 @@ class LoginView extends GetView<LoginController> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () => Get.toNamed(Routes.FORGOT_PASSWORD),
                       child: Text(
                         'Forgot password?',
                         style: GoogleFonts.dmSans(

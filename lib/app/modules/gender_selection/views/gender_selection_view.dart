@@ -20,22 +20,7 @@ class GenderSelectionView extends GetView<GenderSelectionController> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: liquidBackground()),
-          Positioned(
-            top: -160,
-            right: -100,
-            child: GlowOrb(color: kNeon, radius: 270),
-          ),
-          Positioned(
-            bottom: -100,
-            left: -80,
-            child: GlowOrb(color: kSky, radius: 220),
-          ),
-          Positioned(
-            top: 280,
-            left: -60,
-            child: GlowOrb(color: kLilac, radius: 140),
-          ),
+          Positioned.fill(child: trainerBackground()),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
@@ -145,7 +130,8 @@ class GenderSelectionView extends GetView<GenderSelectionController> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: !isSelected ? Colors.white.withOpacity(0.3) : kNeon,
+                      color:
+                          !isSelected ? Colors.white.withOpacity(0.3) : kNeon,
                       width: 2,
                     ),
                     color: isSelected ? kNeon : Colors.transparent,

@@ -42,6 +42,19 @@ class LoginController extends GetxController {
       }
 
       final googleAuth = await googleUser.authentication;
+
+      if (googleAuth.idToken == null || googleAuth.idToken!.isEmpty) {
+        Get.snackbar(
+          'Google sign-in failed',
+          'Missing Google ID token. This is usually a Firebase/Google config issue (Google provider not enabled, SHA fingerprints, or device Google Play Services).',
+          backgroundColor: const Color(0xFFFF5C5C),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 6),
+        );
+        return;
+      }
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -64,7 +77,10 @@ class LoginController extends GetxController {
       String message = e.message ?? 'Google sign-in failed.';
       if (e.code == 'network-request-failed') {
         message =
-            'Network unavailable while contacting Firebase. Check emulator internet and DNS.';
+            'Network error while contacting Firebase. On emulator this is often DNS/proxy/VPN related — try opening https://accounts.google.com in the emulator browser, disable any VPN/proxy, and restart the emulator.';
+      } else if (e.code == 'operation-not-allowed') {
+        message =
+            'Google sign-in is disabled in Firebase Auth. Enable it in Firebase Console → Authentication → Sign-in method → Google.';
       } else if (e.code == 'account-exists-with-different-credential') {
         message =
             'This email is linked with another sign-in method. Use that method first.';
@@ -81,13 +97,30 @@ class LoginController extends GetxController {
       );
     } on PlatformException catch (e) {
       final details = '${e.code}${e.message != null ? ': ${e.message}' : ''}';
+
+      // Common GoogleSignIn plugin codes:
+      // - sign_in_canceled
+      // - sign_in_failed (often contains ApiException: 10 developer_error / SHA1 mismatch)
+      // - network_error
+      // - sign_in_required
+      final hint = switch (e.code) {
+        'network_error' =>
+          'This is almost always a device/emulator network/DNS issue. If IP works but hosts fail ("unknown host"), fix DNS/proxy/VPN and restart the emulator. Also ensure the emulator image includes Google Play services.',
+        'sign_in_canceled' => 'You cancelled the Google account chooser.',
+        'sign_in_failed' =>
+          'If you see ApiException: 10, this is a SHA-1/OAuth client mismatch or missing Google Play Services.',
+        _ => null,
+      };
+
       Get.snackbar(
         'Google Sign-In error',
-        'Platform error: $details',
+        hint == null
+            ? 'Platform error: $details'
+            : 'Platform error: $details\n$hint',
         backgroundColor: const Color(0xFFFF5C5C),
         colorText: Colors.white,
         snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 5),
+        duration: const Duration(seconds: 7),
       );
     } catch (e) {
       Get.snackbar(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../controllers/trainer_details_controller.dart';
 import '../../../services/favourites_service.dart';
 
@@ -23,55 +24,60 @@ class TrainerDetailsView extends GetView<TrainerDetailsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ink,
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Obx(() {
-            final name = controller.trainerName.value;
-            final spec = controller.specialty.value;
-            final rat = controller.rating.value;
-            final reviews = controller.reviewCount.value;
-            final description =
-                controller.bio.value.trim().isNotEmpty
-                    ? controller.bio.value.trim()
-                    : '$name is a certified trainer with 10+ years of experience '
-                        'helping clients achieve their fitness goals. Passionate about '
-                        '${spec.isNotEmpty ? spec.toLowerCase() : 'fitness'}, nutrition, and holistic health.';
-            const int age = 29;
-            const double ht = 1.82;
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Obx(() {
+                final name = controller.trainerName.value;
+                final spec = controller.specialty.value;
+                final rat = controller.rating.value;
+                final reviews = controller.reviewCount.value;
+                final description =
+                    controller.bio.value.trim().isNotEmpty
+                        ? controller.bio.value.trim()
+                        : '$name is a certified trainer with 10+ years of experience '
+                            'helping clients achieve their fitness goals. Passionate about '
+                            '${spec.isNotEmpty ? spec.toLowerCase() : 'fitness'}, nutrition, and holistic health.';
+                const int age = 29;
+                const double ht = 1.82;
 
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHero(context, name, spec, rat, reviews),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-                      _buildStatsRow(age, ht, rat, reviews),
-                      const SizedBox(height: 24),
-                      _buildAbout(description),
-                      const SizedBox(height: 20),
-                      _buildCertifications(),
-                      const SizedBox(height: 20),
-                      _buildScheduleSection(),
-                      const SizedBox(height: 20),
-                      _buildRecentPostsSection(),
-                      const SizedBox(height: 24),
-                      _buildActions(context),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }),
-        ),
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHero(context, name, spec, rat, reviews),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
+                          _buildStatsRow(age, ht, rat, reviews),
+                          const SizedBox(height: 24),
+                          _buildAbout(description),
+                          const SizedBox(height: 20),
+                          _buildCertifications(),
+                          const SizedBox(height: 20),
+                          _buildScheduleSection(),
+                          const SizedBox(height: 20),
+                          _buildRecentPostsSection(),
+                          const SizedBox(height: 24),
+                          _buildActions(context),
+                          const SizedBox(height: 100),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }

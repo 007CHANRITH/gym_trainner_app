@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../../../../config/glass_ui.dart';
 import '../controllers/notifications_controller.dart';
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
@@ -45,49 +46,58 @@ class NotificationsView extends GetView<NotificationsController> {
           ),
         ],
       ),
-      body: Obx(() {
-        final unread = controller.unreadCount.value;
-        return Column(
-          children: [
-            if (unread > 0)
-              Container(
-                margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: neon.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: neon.withOpacity(0.25)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(CupertinoIcons.bell_fill, color: neon, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      '$unread unread notification${unread > 1 ? 's' : ''}',
-                      style: const TextStyle(
-                        color: neon,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          Obx(() {
+            final unread = controller.unreadCount.value;
+            return Column(
+              children: [
+                if (unread > 0)
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
                     ),
-                  ],
+                    decoration: BoxDecoration(
+                      color: neon.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: neon.withOpacity(0.25)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          CupertinoIcons.bell_fill,
+                          color: neon,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '$unread unread notification${unread > 1 ? 's' : ''}',
+                          style: const TextStyle(
+                            color: neon,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: controller.notifications.length,
+                    itemBuilder:
+                        (_, i) => _buildNotifCard(controller.notifications[i]),
+                  ),
                 ),
-              ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
-                physics: const BouncingScrollPhysics(),
-                itemCount: controller.notifications.length,
-                itemBuilder:
-                    (_, i) => _buildNotifCard(controller.notifications[i]),
-              ),
-            ),
-          ],
-        );
-      }),
+              ],
+            );
+          }),
+        ],
+      ),
     );
   }
 

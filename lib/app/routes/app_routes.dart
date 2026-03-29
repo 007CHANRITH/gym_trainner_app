@@ -12,6 +12,7 @@ abstract class Routes {
   static const TRAINER_DETAILS = _Paths.TRAINER_DETAILS;
   static const MESSAGE_SCREEN = _Paths.MESSAGE_SCREEN;
   static const LOGIN = _Paths.LOGIN;
+  static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
   static const SIGN_UP = _Paths.SIGN_UP;
   static const WELCOME = _Paths.WELCOME;
   static const GET_STARTED = _Paths.GET_STARTED;
@@ -32,6 +33,7 @@ abstract class Routes {
   static const TX_HISTORY = _Paths.TX_HISTORY;
   static const ALL_SESSIONS = _Paths.ALL_SESSIONS;
   static const TRAINER_DASHBOARD = _Paths.TRAINER_DASHBOARD;
+  static const TRAINER_AVAILABILITY = _Paths.TRAINER_AVAILABILITY;
   static const ADMIN_DASHBOARD = _Paths.ADMIN_DASHBOARD;
 }
 
@@ -47,6 +49,7 @@ abstract class _Paths {
   static const TRAINER_DETAILS = '/trainer-details';
   static const MESSAGE_SCREEN = '/message-screen';
   static const LOGIN = '/login';
+  static const FORGOT_PASSWORD = '/forgot-password';
   static const SIGN_UP = '/sign-up';
   static const WELCOME = '/welcome';
   static const GET_STARTED = '/get-started';
@@ -67,5 +70,6 @@ abstract class _Paths {
   static const NOTIFICATIONS = '/notifications';
   static const TX_HISTORY = '/tx-history';
   static const TRAINER_DASHBOARD = '/trainer-dashboard';
+  static const TRAINER_AVAILABILITY = '/trainer-availability';
   static const ADMIN_DASHBOARD = '/admin-dashboard';
 }

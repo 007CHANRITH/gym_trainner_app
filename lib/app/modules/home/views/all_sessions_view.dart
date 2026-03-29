@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../config/glass_ui.dart';
 import '../../../services/favourites_service.dart';
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
@@ -311,12 +312,14 @@ class _AllSessionsViewState extends State<AllSessionsView>
           ),
         ),
       ),
-      body: Container(
-        color: _ink,
-        child: TabBarView(
-          controller: _tabController,
-          children: [_buildStudioTab(), _buildOnlineTab()],
-        ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          TabBarView(
+            controller: _tabController,
+            children: [_buildStudioTab(), _buildOnlineTab()],
+          ),
+        ],
       ),
     );
   }
@@ -324,7 +327,7 @@ class _AllSessionsViewState extends State<AllSessionsView>
   // ─── Studio Tab ────────────────────────────────────────────────────────────
   Widget _buildStudioTab() {
     return Container(
-      color: _ink,
+      color: Colors.transparent,
       child: Column(
         children: [
           _buildFilterChips(
@@ -347,7 +350,7 @@ class _AllSessionsViewState extends State<AllSessionsView>
   // ─── Online Tab ────────────────────────────────────────────────────────────
   Widget _buildOnlineTab() {
     return Container(
-      color: _ink,
+      color: Colors.transparent,
       child: Column(
         children: [
           _buildFilterChips(
@@ -420,7 +423,7 @@ class _AllSessionsViewState extends State<AllSessionsView>
 
     if (filtered.isEmpty) {
       return Container(
-        color: _ink,
+        color: Colors.transparent,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -539,7 +542,9 @@ class _AllSessionsViewState extends State<AllSessionsView>
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.35)),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.35),
+                    ),
                   ),
                   child: Text(
                     isOpen ? 'Open' : 'Full',
@@ -713,319 +718,343 @@ class _VideoDetailPageState extends State<_VideoDetailPage> {
 
     return Scaffold(
       backgroundColor: _ink,
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Hero ──────────────────────────────────────────────────────
-              _buildHero(context, name, spec, rat, sessions, portrait, isOpen),
+      body: Stack(
+        children: [
+          Positioned.fill(child: trainerBackground()),
+          SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Hero ──────────────────────────────────────────────────────
+                  _buildHero(
+                    context,
+                    name,
+                    spec,
+                    rat,
+                    sessions,
+                    portrait,
+                    isOpen,
+                  ),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 24),
-
-                    // ── Stats ──────────────────────────────────────────────
-                    _buildStatsRow(rat, sessions),
-                    const SizedBox(height: 24),
-
-                    // ── Session info chips ─────────────────────────────────
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 8,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _chip(CupertinoIcons.calendar, s['date'] as String),
-                        _chip(CupertinoIcons.clock, s['time'] as String),
-                        _chip(CupertinoIcons.play_rectangle, 'Video Session'),
-                        _chip(
-                          CupertinoIcons.money_dollar_circle,
-                          '\$$price / session',
-                        ),
-                        _chip(
-                          CupertinoIcons.person_2,
-                          isOpen ? 'Open · $spots spots' : 'Session Full',
-                          accent: isOpen ? _neon : _coral,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                    // ── About ──────────────────────────────────────────────
-                    _sectionTitle('About'),
-                    const SizedBox(height: 12),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontSize: 14,
-                        height: 1.6,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+                        // ── Stats ──────────────────────────────────────────────
+                        _buildStatsRow(rat, sessions),
+                        const SizedBox(height: 24),
 
-                    // ── YouTube Video ──────────────────────────────────────
-                    _sectionTitle('Trainer Video'),
-                    const SizedBox(height: 12),
-                    GestureDetector(
-                      onTap: () => _openYouTube(ytVideoUrl, ytVideoUrl),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
-                        child: Stack(
+                        // ── Session info chips ─────────────────────────────────
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 8,
                           children: [
-                            Image.network(
-                              thumbUrl,
-                              height: 210,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder:
-                                  (_, __, ___) => Container(
-                                    height: 210,
-                                    color: _raised,
-                                    child: const Center(
-                                      child: Icon(
-                                        CupertinoIcons.play_circle,
-                                        color: Colors.white38,
-                                        size: 60,
-                                      ),
-                                    ),
-                                  ),
+                            _chip(CupertinoIcons.calendar, s['date'] as String),
+                            _chip(CupertinoIcons.clock, s['time'] as String),
+                            _chip(
+                              CupertinoIcons.play_rectangle,
+                              'Video Session',
                             ),
-                            // gradient
-                            Positioned.fill(
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withValues(alpha: 0.55),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            _chip(
+                              CupertinoIcons.money_dollar_circle,
+                              '\$$price / session',
                             ),
-                            // play button
-                            Positioned.fill(
-                              child: Center(
-                                child: Container(
-                                  width: 64,
-                                  height: 64,
-                                  decoration: BoxDecoration(
-                                    color: _neon,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: _neon.withValues(alpha: 0.55),
-                                        blurRadius: 24,
-                                        spreadRadius: 2,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    CupertinoIcons.play_fill,
-                                    color: Colors.black,
-                                    size: 28,
-                                  ),
-                                ),
-                              ),
+                            _chip(
+                              CupertinoIcons.person_2,
+                              isOpen ? 'Open · $spots spots' : 'Session Full',
+                              accent: isOpen ? _neon : _coral,
                             ),
-                            // YouTube badge
-                            Positioned(
-                              left: 14,
-                              bottom: 12,
-                              child: Row(
-                                children: [
-                                  _YouTubeLogo(size: 20),
-                                  const SizedBox(width: 6),
-                                  const Text(
-                                    'Trainer Video',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 13,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black54,
-                                          blurRadius: 4,
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // ── About ──────────────────────────────────────────────
+                        _sectionTitle('About'),
+                        const SizedBox(height: 12),
+                        Text(
+                          description,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 14,
+                            height: 1.6,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // ── YouTube Video ──────────────────────────────────────
+                        _sectionTitle('Trainer Video'),
+                        const SizedBox(height: 12),
+                        GestureDetector(
+                          onTap: () => _openYouTube(ytVideoUrl, ytVideoUrl),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  thumbUrl,
+                                  height: 210,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (_, __, ___) => Container(
+                                        height: 210,
+                                        color: _raised,
+                                        child: const Center(
+                                          child: Icon(
+                                            CupertinoIcons.play_circle,
+                                            color: Colors.white38,
+                                            size: 60,
+                                          ),
                                         ),
-                                      ],
+                                      ),
+                                ),
+                                // gradient
+                                Positioned.fill(
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.black.withValues(alpha: 0.55),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ],
+                                ),
+                                // play button
+                                Positioned.fill(
+                                  child: Center(
+                                    child: Container(
+                                      width: 64,
+                                      height: 64,
+                                      decoration: BoxDecoration(
+                                        color: _neon,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: _neon.withValues(
+                                              alpha: 0.55,
+                                            ),
+                                            blurRadius: 24,
+                                            spreadRadius: 2,
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(
+                                        CupertinoIcons.play_fill,
+                                        color: Colors.black,
+                                        size: 28,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                // YouTube badge
+                                Positioned(
+                                  left: 14,
+                                  bottom: 12,
+                                  child: Row(
+                                    children: [
+                                      _YouTubeLogo(size: 20),
+                                      const SizedBox(width: 6),
+                                      const Text(
+                                        'Trainer Video',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.black54,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Watch on YouTube — professional button
+                        GestureDetector(
+                          onTap: () => _openYouTube(youtubeChannel, ytVideoUrl),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF0000),
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFFFF0000,
+                                  ).withValues(alpha: 0.35),
+                                  blurRadius: 14,
+                                  spreadRadius: 0,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _YouTubeLogo(size: 22),
+                                const SizedBox(width: 10),
+                                const Text(
+                                  'Watch on YouTube',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // ── Certifications ────────────────────────────────────
+                        _buildCertifications(),
+                        const SizedBox(height: 24),
+
+                        // ── Reviews ───────────────────────────────────────────
+                        _buildReviews(name),
+                        const SizedBox(height: 24),
+
+                        // ── Schedule ──────────────────────────────────────────
+                        _buildSchedule(),
+                        const SizedBox(height: 28),
+
+                        // ── Book + Message buttons ─────────────────────────────
+                        GestureDetector(
+                          onTap: isOpen ? () => Navigator.pop(context) : null,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 17),
+                            decoration: BoxDecoration(
+                              color: isOpen ? _neon : _stroke,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow:
+                                  isOpen
+                                      ? [
+                                        BoxShadow(
+                                          color: _neon.withValues(alpha: 0.4),
+                                          blurRadius: 20,
+                                          spreadRadius: 1,
+                                        ),
+                                      ]
+                                      : [],
+                            ),
+                            child: Center(
+                              child: Text(
+                                isOpen ? 'Book a Session' : 'Session Full',
+                                style: TextStyle(
+                                  color: isOpen ? _ink : _muted,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Watch on YouTube — professional button
-                    GestureDetector(
-                      onTap: () => _openYouTube(youtubeChannel, ytVideoUrl),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF0000),
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFFF0000).withValues(alpha: 0.35),
-                              blurRadius: 14,
-                              spreadRadius: 0,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        const SizedBox(height: 12),
+                        Row(
                           children: [
-                            _YouTubeLogo(size: 22),
-                            const SizedBox(width: 10),
-                            const Text(
-                              'Watch on YouTube',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                                letterSpacing: 0.2,
+                            // Message button
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _card,
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(color: _stroke),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        CupertinoIcons.chat_bubble,
+                                        color: Colors.white70,
+                                        size: 17,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Message',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Review button
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _card,
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(color: _stroke),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        CupertinoIcons.star,
+                                        color: Colors.white70,
+                                        size: 17,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Review',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // ── Certifications ────────────────────────────────────
-                    _buildCertifications(),
-                    const SizedBox(height: 24),
-
-                    // ── Reviews ───────────────────────────────────────────
-                    _buildReviews(name),
-                    const SizedBox(height: 24),
-
-                    // ── Schedule ──────────────────────────────────────────
-                    _buildSchedule(),
-                    const SizedBox(height: 28),
-
-                    // ── Book + Message buttons ─────────────────────────────
-                    GestureDetector(
-                      onTap: isOpen ? () => Navigator.pop(context) : null,
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 17),
-                        decoration: BoxDecoration(
-                          color: isOpen ? _neon : _stroke,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow:
-                              isOpen
-                                  ? [
-                                    BoxShadow(
-                                      color: _neon.withValues(alpha: 0.4),
-                                      blurRadius: 20,
-                                      spreadRadius: 1,
-                                    ),
-                                  ]
-                                  : [],
-                        ),
-                        child: Center(
-                          child: Text(
-                            isOpen ? 'Book a Session' : 'Session Full',
-                            style: TextStyle(
-                              color: isOpen ? _ink : _muted,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        // Message button
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              decoration: BoxDecoration(
-                                color: _card,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: _stroke),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(
-                                    CupertinoIcons.chat_bubble,
-                                    color: Colors.white70,
-                                    size: 17,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Message',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // Review button
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              decoration: BoxDecoration(
-                                color: _card,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: _stroke),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(
-                                    CupertinoIcons.star,
-                                    color: Colors.white70,
-                                    size: 17,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Review',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        const SizedBox(height: 100),
                       ],
                     ),
-                    const SizedBox(height: 100),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
