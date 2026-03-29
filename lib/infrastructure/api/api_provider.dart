@@ -7,7 +7,9 @@ class ApiServiceProvider {
   /// Initialize all API services (call this in main.dart)
   static Future<void> initialize() async {
     // Initialize API Client
-    final apiClient = ApiClient(baseUrl: 'https://your-backend-api.com/api/v1');
+    final apiClient = ApiClient(
+      baseUrl: 'https://gym-trainer-backend-9lxr.onrender.com/api/v1',
+    );
     Get.put<ApiClient>(apiClient);
 
     // Initialize Repositories
