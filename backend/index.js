@@ -44,12 +44,21 @@ try {
   console.log('Running backend without Firebase for now...');
 }
 
-// Import routes AFTER Firebase initialization attempt
-const authRoutes = require('./src/routes/auth');
-const userRoutes = require('./src/routes/users');
-const trainerRoutes = require('./src/routes/trainers');
-const bookingRoutes = require('./src/routes/bookings');
-const adminRoutes = require('./src/routes/admin');
+// Import routes - will handle missing Firebase gracefully inside route files
+let authRoutes, userRoutes, trainerRoutes, bookingRoutes, adminRoutes;
+
+try {
+  authRoutes = require('./src/routes/auth');
+  userRoutes = require('./src/routes/users');
+  trainerRoutes = require('./src/routes/trainers');
+  bookingRoutes = require('./src/routes/bookings');
+  adminRoutes = require('./src/routes/admin');
+  console.log('✅ All routes loaded successfully');
+} catch (error) {
+  console.log('⚠️ Route loading error:', error.message);
+  // Create dummy routes if real ones fail
+  authRoutes = userRoutes = trainerRoutes = bookingRoutes = adminRoutes = require('express').Router();
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
