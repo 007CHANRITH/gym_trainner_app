@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
   try {
     const { limit = 10, offset = 0, speciality, minRating, search } = req.query;
 
-    // Simple query without ordering to avoid index requirement
+    // Simple query without ordering to avoid complex index requirement
     let filters = [{ field: 'userType', operator: '==', value: 'trainer' }];
 
     if (speciality) {
@@ -34,6 +34,15 @@ router.get('/', async (req, res) => {
 
     // Sort by rating in application code
     result.items.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+    // Transform items to include trainerId field
+    result.items = result.items.map(trainer => ({
+      ...trainer,
+      trainerId: trainer.id, // Ensure trainerId is set
+      specialty: trainer.speciality || trainer.specialty || '', // Support both spellings
+      reviews: trainer.rating ? Math.round(trainer.rating * 10) : 0, // Calculate reviews count
+      sessions: trainer.rating ? Math.round(trainer.rating * 10) : 0
+    }));
 
     return sendSuccess(res, result);
 
