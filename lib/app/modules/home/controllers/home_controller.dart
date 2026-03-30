@@ -54,10 +54,12 @@ class HomeController extends GetxController {
   RxList<Map<String, dynamic>> get upcomingBookings =>
       _bookings.upcomingBookings;
 
-  // Stats (reactive — wire to Firestore later)
-  var streak = 12.obs;
-  var sessionsCount = 48.obs;
-  var goalsCount = 5.obs;
+  // Stats (reactive — fetches from Firestore in real-time)
+  var streak = 0.obs;
+  var sessionsCount = 0.obs;
+  var goalsCount = 0.obs;
+
+  late final StreamSubscription<DocumentSnapshot> _statsSubscription;
 
   // ─── Category labels (same order as the UI chips) ─────────────────────────
   static const _categoryLabels = [
@@ -263,6 +265,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     _listenToUser();
+    _listenToUserStats();
     _rebuildTrainerCatalog();
     _listenTrainersRealtime();
     _listenTrainerPostsRealtime();
@@ -280,9 +283,29 @@ class HomeController extends GetxController {
     });
   }
 
+  void _listenToUserStats() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    _statsSubscription = _firestore
+        .collection('users')
+        .doc(user.uid)
+        .snapshots()
+        .listen((doc) {
+          if (!doc.exists) return;
+          final data = doc.data() ?? const <String, dynamic>{};
+
+          // Fetch real stats from Firestore
+          streak.value = (data['streak'] as num?)?.toInt() ?? 0;
+          sessionsCount.value = (data['totalSessions'] as num?)?.toInt() ?? 0;
+          goalsCount.value = (data['goalsCount'] as num?)?.toInt() ?? 0;
+        });
+  }
+
   @override
   void onClose() {
     _userSub?.cancel();
+    _statsSubscription.cancel();
     for (final sub in _subs) {
       sub.cancel();
     }
