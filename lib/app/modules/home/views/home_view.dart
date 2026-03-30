@@ -960,32 +960,37 @@ class HomeView extends GetView<HomeController> {
     final trainer = trainerProfile ?? post;
     final name = (trainer['name'] ?? trainerName).toString();
     final specialty = (trainer['specialty'] ?? 'Fitness').toString();
-    final rating = (trainer['rating'] ?? 4.5).toStringAsFixed(1);
-    final reviews = (trainer['reviews'] ?? 0).toString();
     final price = (trainer['pricePerHour'] ?? 45).toString();
     final imageUrl = (trainer['image'] ?? trainer['imageUrl'] ?? '').toString();
-    final isAvailable = (trainer['isAvailable'] ?? true) as bool;
+
+    // Get date from post if available, otherwise use today
+    final DateTime sessionDate = _parseDate(post['date']) ?? DateTime.now();
+    final String dateStr = _formatDate(sessionDate);
+    final String timeStr = _formatTime(post['time'] ?? '07:00 AM');
+    final String sessionType = (post['sessionType'] ?? '1-on-1').toString();
 
     return GestureDetector(
       onTap: () => controller.navigateToTrainerFromPost(post),
       child: Container(
-        width: 280,
-        padding: const EdgeInsets.all(12),
+        width: 340,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
         decoration: BoxDecoration(
           color: card,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: stroke),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // ─── Trainer Header with Avatar ────────────────────────────
+            // ─── Header: Avatar + Info + Open Button ──────────────────
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Avatar
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: raised,
@@ -1003,6 +1008,7 @@ class HomeView extends GetView<HomeController> {
                                     child: Icon(
                                       CupertinoIcons.person_fill,
                                       color: Colors.white54,
+                                      size: 28,
                                     ),
                                   ),
                             )
@@ -1010,6 +1016,7 @@ class HomeView extends GetView<HomeController> {
                               child: Icon(
                                 CupertinoIcons.person_fill,
                                 color: Colors.white54,
+                                size: 28,
                               ),
                             ),
                   ),
@@ -1026,25 +1033,27 @@ class HomeView extends GetView<HomeController> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         specialty,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: muted, fontSize: 11),
+                        style: TextStyle(color: muted, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
                 // Open Button
                 GestureDetector(
                   onTap: () => controller.navigateToTrainerFromPost(post),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
+                      horizontal: 12,
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
@@ -1058,80 +1067,58 @@ class HomeView extends GetView<HomeController> {
                         color: neon,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
 
-            // ─── Rating & Info Row ──────────────────────────────────────
+            // ─── Date, Time & Session Type ───────────────────────────
             Row(
               children: [
-                // Rating Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: raised,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        CupertinoIcons.star_fill,
-                        color: neon,
-                        size: 12,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        rating,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
+                // Date
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(CupertinoIcons.calendar, color: muted, size: 14),
+                    const SizedBox(width: 4),
+                    Text(dateStr, style: TextStyle(color: muted, fontSize: 11)),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                // Reviews Count
-                Text(
-                  '$reviews reviews',
-                  style: TextStyle(color: muted, fontSize: 10),
+                const SizedBox(width: 16),
+                // Time
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(CupertinoIcons.clock, color: muted, size: 14),
+                    const SizedBox(width: 4),
+                    Text(timeStr, style: TextStyle(color: muted, fontSize: 11)),
+                  ],
                 ),
-                const Spacer(),
-                // Availability Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isAvailable ? coral.withValues(alpha: 0.15) : raised,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: isAvailable ? coral : muted),
-                  ),
-                  child: Text(
-                    isAvailable ? 'Available' : 'Busy',
-                    style: TextStyle(
-                      color: isAvailable ? coral : muted,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
+                const SizedBox(width: 16),
+                // Session Type
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(CupertinoIcons.person_2, color: muted, size: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      sessionType,
+                      style: TextStyle(color: muted, fontSize: 11),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
 
-            // ─── Price Row ──────────────────────────────────────────────
+            // ─── Price & Spots ───────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1140,37 +1127,43 @@ class HomeView extends GetView<HomeController> {
                       '\$$price/session',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                       ),
                     ),
+                    const SizedBox(height: 3),
                     Text(
                       '1 spot left',
-                      style: TextStyle(color: neon, fontSize: 10),
+                      style: TextStyle(
+                        color: neon,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
                 // Book Session Button
                 GestureDetector(
                   onTap: () {
-                    // Navigate to booking flow
                     Get.toNamed('/book-session', arguments: trainer);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
+                      horizontal: 20,
+                      vertical: 10,
                     ),
                     decoration: BoxDecoration(
                       color: neon,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Text(
-                      'Book',
+                      'Book Session',
                       style: TextStyle(
                         color: ink,
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ),
@@ -1181,6 +1174,42 @@ class HomeView extends GetView<HomeController> {
         ),
       ),
     );
+  }
+
+  DateTime? _parseDate(dynamic dateVal) {
+    if (dateVal == null) return null;
+    if (dateVal is DateTime) return dateVal;
+    if (dateVal is String) {
+      try {
+        return DateTime.parse(dateVal);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
+  String _formatTime(dynamic timeVal) {
+    if (timeVal is String) return timeVal;
+    return '7:00 AM';
   }
 
   String _normalizeName(String name) {
