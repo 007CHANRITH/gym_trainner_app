@@ -35,9 +35,16 @@ try {
       databaseURL: process.env.FIREBASE_DATABASE_URL,
     });
     firebaseInitialized = true;
-    console.log('✅ Firebase initialized');
+    console.log('✅ Firebase initialized with project:', serviceAccount.project_id);
+    console.log('✅ Service account email:', serviceAccount.client_email);
   } else {
-    console.log('⚠️ Firebase credentials incomplete, running without Firebase');
+    console.log('⚠️ Firebase credentials incomplete');
+    if (serviceAccount) {
+      console.log('   - Project ID:', serviceAccount.project_id);
+      console.log('   - Has private_key:', !!serviceAccount.private_key);
+      console.log('   - Client email:', serviceAccount.client_email);
+    }
+    console.log('Running backend without Firebase for now...');
   }
 } catch (error) {
   console.log('⚠️ Firebase initialization failed:', error.message);

@@ -34,7 +34,7 @@ class DatabaseService {
    */
   static async createDoc(collection, data, customId = null) {
     try {
-      const docRef = customId
+      const docRef = customId      node generate-firebase-base64.js
         ? getDb().collection(collection).doc(customId)
         : getDb().collection(collection).doc();
 

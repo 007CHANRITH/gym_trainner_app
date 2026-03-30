@@ -11,23 +11,29 @@ router.get('/', async (req, res) => {
   try {
     const { limit = 10, offset = 0, speciality, minRating, search } = req.query;
 
+    // Simple query without ordering to avoid index requirement
     let filters = [{ field: 'userType', operator: '==', value: 'trainer' }];
 
     if (speciality) {
       filters.push({ field: 'speciality', operator: '==', value: speciality });
     }
 
-    if (minRating) {
-      filters.push({ field: 'rating', operator: '>=', value: parseFloat(minRating) });
-    }
-
+    // Get trainers without complex ordering first
     const result = await DatabaseService.query(
       'users',
       filters,
-      { field: 'rating', direction: 'desc' },
+      null, // Skip ordering while index builds
       parseInt(limit),
       parseInt(offset)
     );
+
+    // Filter by minRating in application code if provided
+    if (minRating) {
+      result.items = result.items.filter(t => (t.rating || 0) >= parseFloat(minRating));
+    }
+
+    // Sort by rating in application code
+    result.items.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
     return sendSuccess(res, result);
 

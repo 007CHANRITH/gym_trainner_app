@@ -47,9 +47,9 @@ void main() async {
     debugPrint('⚠️ Supabase initialization error: $e');
   }
 
-  // Register global services - use lazyPut for services that depend on Firebase
-  Get.lazyPut<UserSupportService>(() => UserSupportService());
-  Get.lazyPut<UserRoleService>(() => UserRoleService());
+  // Register global services - create immediately so they're available
+  Get.put<UserSupportService>(UserSupportService());
+  Get.put<UserRoleService>(UserRoleService());
 
   // These can initialize asynchronously in background
   Get.putAsync<BookingsService>(() async => BookingsService());
