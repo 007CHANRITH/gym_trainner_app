@@ -25,6 +25,7 @@ class HomeView extends GetView<HomeController> {
   static const Color sky = Color(0xFF5CE8FF);
   static const Color lilac = Color(0xFFA78BFA);
   static const Color muted = Color(0xFF6B6B7E);
+  static const Color transparent = Color(0x00000000);
 
   @override
   Widget build(BuildContext context) {
@@ -935,17 +936,41 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildPostCard(Map<String, dynamic> post) {
-    final title = (post['title'] ?? '').toString();
-    final caption = (post['caption'] ?? '').toString();
-    final imageUrl = (post['imageUrl'] ?? '').toString();
     final trainerName =
         (post['trainerName'] ?? post['authorName'] ?? 'Trainer').toString();
-    final category = (post['category'] ?? 'Workout').toString();
+    final trainerId = (post['trainerId'] ?? post['authorId'] ?? '').toString();
+
+    // Try to find the full trainer profile from the catalog
+    Map<String, dynamic>? trainerProfile;
+    if (trainerId.isNotEmpty) {
+      trainerProfile = controller.trainerCatalog.firstWhereOrNull(
+        (t) => (t['trainerId'] ?? t['id']).toString() == trainerId,
+      );
+    }
+
+    if (trainerProfile == null) {
+      trainerProfile = controller.trainerCatalog.firstWhereOrNull(
+        (t) =>
+            _normalizeName(t['name']?.toString() ?? '') ==
+            _normalizeName(trainerName),
+      );
+    }
+
+    // Use post data as fallback if trainer profile not found
+    final trainer = trainerProfile ?? post;
+    final name = (trainer['name'] ?? trainerName).toString();
+    final specialty = (trainer['specialty'] ?? 'Fitness').toString();
+    final rating = (trainer['rating'] ?? 4.5).toStringAsFixed(1);
+    final reviews = (trainer['reviews'] ?? 0).toString();
+    final price = (trainer['pricePerHour'] ?? 45).toString();
+    final imageUrl = (trainer['image'] ?? trainer['imageUrl'] ?? '').toString();
+    final isAvailable = (trainer['isAvailable'] ?? true) as bool;
 
     return GestureDetector(
       onTap: () => controller.navigateToTrainerFromPost(post),
       child: Container(
-        width: 260,
+        width: 280,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: card,
           borderRadius: BorderRadius.circular(18),
@@ -954,133 +979,212 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(18),
-              ),
-              child: Container(
-                height: 120,
-                width: double.infinity,
-                color: raised,
-                child:
-                    imageUrl.isNotEmpty
-                        ? CachedNetworkImage(
-                          imageUrl: imageUrl,
-                          fit: BoxFit.cover,
-                          memCacheWidth: 520,
-                          memCacheHeight: 240,
-                          fadeInDuration: const Duration(milliseconds: 120),
-                          errorWidget:
-                              (_, __, ___) => const Center(
-                                child: Icon(
-                                  CupertinoIcons.photo,
-                                  color: Colors.white54,
-                                  size: 28,
-                                ),
+            // ─── Trainer Header with Avatar ────────────────────────────
+            Row(
+              children: [
+                // Avatar
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: raised,
+                    border: Border.all(color: stroke),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child:
+                        imageUrl.isNotEmpty
+                            ? CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.cover,
+                              errorWidget:
+                                  (_, __, ___) => const Center(
+                                    child: Icon(
+                                      CupertinoIcons.person_fill,
+                                      color: Colors.white54,
+                                    ),
+                                  ),
+                            )
+                            : const Center(
+                              child: Icon(
+                                CupertinoIcons.person_fill,
+                                color: Colors.white54,
                               ),
-                        )
-                        : const Center(
-                          child: Icon(
-                            CupertinoIcons.photo,
-                            color: Colors.white54,
-                            size: 28,
-                          ),
-                        ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: sky.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: sky.withValues(alpha: 0.35),
                             ),
-                          ),
-                          child: Text(
-                            category,
-                            style: const TextStyle(
-                              color: sky,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Name & Specialty
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
                         ),
-                        const Spacer(),
-                        Text(
-                          trainerName,
-                          style: TextStyle(
-                            color: muted,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                      ),
+                      Text(
+                        specialty,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: muted, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+                // Open Button
+                GestureDetector(
+                  onTap: () => controller.navigateToTrainerFromPost(post),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      title.isNotEmpty ? title : 'Trainer Update',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
+                    decoration: BoxDecoration(
+                      color: transparent,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: neon),
+                    ),
+                    child: const Text(
+                      'Open',
+                      style: TextStyle(
+                        color: neon,
+                        fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    Expanded(
-                      child: Text(
-                        caption.isNotEmpty
-                            ? caption
-                            : 'New content from this trainer.',
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // ─── Rating & Info Row ──────────────────────────────────────
+            Row(
+              children: [
+                // Rating Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: raised,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        CupertinoIcons.star_fill,
+                        color: neon,
+                        size: 12,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        rating,
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 11,
-                          height: 1.35,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Reviews Count
+                Text(
+                  '$reviews reviews',
+                  style: TextStyle(color: muted, fontSize: 10),
+                ),
+                const Spacer(),
+                // Availability Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isAvailable ? coral.withValues(alpha: 0.15) : raised,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: isAvailable ? coral : muted),
+                  ),
+                  child: Text(
+                    isAvailable ? 'Available' : 'Busy',
+                    style: TextStyle(
+                      color: isAvailable ? coral : muted,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: const [
-                        Text(
-                          'Open Trainer',
-                          style: TextStyle(
-                            color: neon,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(width: 4),
-                        Icon(
-                          CupertinoIcons.chevron_right,
-                          color: neon,
-                          size: 11,
-                        ),
-                      ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // ─── Price Row ──────────────────────────────────────────────
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '\$$price/session',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      '1 spot left',
+                      style: TextStyle(color: neon, fontSize: 10),
                     ),
                   ],
                 ),
-              ),
+                // Book Session Button
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to booking flow
+                    Get.toNamed('/book-session', arguments: trainer);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: neon,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'Book',
+                      style: TextStyle(
+                        color: ink,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _normalizeName(String name) {
+    return name.toLowerCase().replaceAll(RegExp(r'\s+'), '');
   }
 
   // ─── Quick Actions ────────────────────────────────────────────────────────

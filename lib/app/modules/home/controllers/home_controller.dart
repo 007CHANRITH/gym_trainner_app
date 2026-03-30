@@ -54,6 +54,9 @@ class HomeController extends GetxController {
   RxList<Map<String, dynamic>> get upcomingBookings =>
       _bookings.upcomingBookings;
 
+  // Trainer catalog accessor for views
+  List<Map<String, dynamic>> get trainerCatalog => _trainerCatalog;
+
   // Stats (reactive — fetches from Firestore in real-time)
   var streak = 0.obs;
   var sessionsCount = 0.obs;
